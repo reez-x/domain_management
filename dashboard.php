@@ -1,4 +1,12 @@
 <?php 
+
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+
 include 'header.php'; 
 include 'function.php';
 
@@ -65,6 +73,16 @@ usort($filtered, function($a, $b) use ($sort) {
 </head>
 <body>
     <h1>Domain Management Dashboard</h1>
+
+    <!-- Tombol Logout -->
+<div style="margin-bottom:20px;">
+    <form action="logout.php" method="post" style="display:inline;">
+        <button type="submit" 
+                style="background:#ef4444; color:#fff; border:none; padding:10px 20px; border-radius:8px; cursor:pointer;">
+            Logout
+        </button>
+    </form>
+</div>
 
     <!-- Filter Form -->
     <form method="get" class="filters">
