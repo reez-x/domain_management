@@ -1,170 +1,199 @@
-<?php include 'header.php'; ?>
+<?php 
+include 'header.php'; 
+include 'function.php';
+
+//function
+$sql = "SELECT 
+    item_type AS tipe, 
+    name AS nama, 
+    provider, 
+    expire_date AS expire, 
+    DATEDIFF(expire_date, CURDATE()) AS hari, 
+    auto_renew AS auto, 
+    note AS catatan
+    FROM domains";
+
+    $data = getData($sql);
+
+$search = strtolower($_GET['search'] ?? "");
+$type   = $_GET['type']   ?? "";
+$status = $_GET['status'] ?? "";
+$sort   = $_GET['sort']   ?? "asc";
+
+$filtered = array_filter($data, function($item) use ($search, $type, $status) {
+    $matchSearch = $search === "" || 
+                   strpos(strtolower($item["nama"]), $search) !== false ||
+                   strpos(strtolower($item["provider"]), $search) !== false;
+    $matchType   = $type === "" || strtolower($item["tipe"]) === strtolower($type);
+    $matchStatus = $status === "" || $item["auto"] === $status;
+    return $matchSearch && $matchType && $matchStatus;
+});
+
+usort($filtered, function($a, $b) use ($sort) {
+    return $sort === "asc" ? $a["hari"] <=> $b["hari"] : $b["hari"] <=> $a["hari"];
+});
+?>
 
 <!DOCTYPE html>
 <html>
 <head>
     <title>Dashboard Domain</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 30px; background: #0f172a; color: #e2e8f0; }
+        body { font-family: Arial, sans-serif; background: #0f172a; color: #fff; padding: 20px; }
         h1 { margin-bottom: 20px; }
-        .filters { margin-bottom: 20px; }
-        input, select {
-            padding: 8px;
-            margin: 5px;
-            border-radius: 5px;
-            border: 1px solid #334155;
-            background: #1e293b;
-            color: #e2e8f0;
-        }
-        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-        th, td { border: 1px solid #334155; padding: 10px; text-align: center; }
-        th { background-color: #1e293b; color: #f1f5f9; }
+        .filters { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; max-width: 400px; }
+        select, input { padding: 10px; border-radius: 8px; border: none; background: #161b22; color: white; width: 100%; }
+        button { padding: 10px; border-radius: 8px; border: none; background: #0284c7; color: white; cursor: pointer; }
+        table { border-collapse: collapse; width: 100%; background: #1e293b; border-radius: 10px; overflow: hidden; }
+        th, td { padding: 12px; text-align: center; }
+        th { background-color: #334155; }
         tr:nth-child(even) { background-color: #1e293b; }
-        .pagination { margin-top: 20px; text-align: center; }
-        .pagination button {
-            background: #1e293b;
-            border: 1px solid #334155;
-            color: #e2e8f0;
-            margin: 0 5px;
-            padding: 6px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .pagination button.active {
-            background: #3b82f6;
-            border-color: #2563eb;
-            color: white;
-        }
+        tr:nth-child(odd) { background-color: #0f172a; }
+        .label-hosting { background: #3f1d4a; color: #fff; padding: 4px 10px; border-radius: 20px; font-size: 12px; }
+        .label-domain  { background: #0f3a46; color: #fff; padding: 4px 10px; border-radius: 20px; font-size: 12px; }
+        .btn { padding: 6px 12px; margin: 2px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
+        .btn-edit { background: #475569; color: #fff; }
+        .btn-plus { background: #0284c7; color: #fff; }
+        .btn-del  { background: #334155; color: #fff; }
+        .red { color: #ef4444; font-weight: bold; }
+        .yellow { color: #facc15; font-weight: bold; }
+        .green { color: #22c55e; font-weight: bold; }
+        #pagination { margin-top: 20px; }
+        #pagination button { margin: 2px; padding: 6px 10px; border: none; border-radius: 5px; }
+        #pagination button.active { background: #0284c7; color: #fff; }
     </style>
 </head>
 <body>
     <h1>Domain Management Dashboard</h1>
 
-    <div class="filters">
-        <input type="text" id="searchInput" placeholder="Cari nama / provider / tag..." onkeyup="applyFilters()">
-        
-        <select id="typeFilter" onchange="applyFilters()">
-            <option value="">Semua Tipe</option>
-            <option value="Personal">Personal</option>
-            <option value="Business">Business</option>
-        </select>
-        
-        <select id="statusFilter" onchange="applyFilters()">
-            <option value="">Semua Status</option>
-            <option value="Active">Active</option>
-            <option value="Expired">Expired</option>
-            <option value="Pending">Pending</option>
-        </select>
-        
-        <select id="sortFilter" onchange="applyFilters()">
-            <option value="asc">Urut: Hari Tersisa ↑</option>
-            <option value="desc">Urut: Hari Tersisa ↓</option>
-        </select>
-    </div>
+    <!-- Filter Form -->
+    <form method="get" class="filters">
+        <div style="display:flex; gap:10px;">
+            <input type="text" id="searchInput" name="search" placeholder="Cari nama / provider..." value="<?= htmlspecialchars($search) ?>">
+            <button type="submit">Cari</button>
+        </div>
 
+        <select name="type" onchange="this.form.submit()">
+            <option value="">Semua Tipe</option>
+            <option value="Domain" <?= $type=="Domain"?"selected":"" ?>>Domain</option>
+            <option value="Hosting" <?= $type=="Hosting"?"selected":"" ?>>Hosting</option>
+        </select>
+
+        <select name="status" onchange="this.form.submit()">
+            <option value="">Semua Status</option>
+            <option value="JatuhTempo"  <?= $status=="JatuhTempo"?"selected":"" ?>>Jatuh tempo ≤ 30</option>
+            <option value="Expired" <?= $status=="Expired"?"selected":"" ?>>Expired</option>
+            <option value="AutoRenew" <?= $status=="AutoRenew"?"selected":"" ?>>Auto-Renew ON</option>
+        </select>
+
+        <select name="sort" onchange="this.form.submit()">
+            <option value="asc"   <?= $sort=="asc"?"selected":"" ?>>Urut: Hari Tersisa ↑</option>
+            <option value="desc"  <?= $sort=="desc"?"selected":"" ?>>Urut: Hari Tersisa ↓</option>
+            <option value="nama_asc"  <?= $sort=="nama_asc"?"selected":"" ?>>Urut: Nama A-Z</option>
+            <option value="nama_desc" <?= $sort=="nama_desc"?"selected":"" ?>>Urut: Nama Z-A</option>
+            <option value="tgl_asc"   <?= $sort=="tgl_asc"?"selected":"" ?>>Urut: Tanggal ↑</option>
+            <option value="tgl_desc"  <?= $sort=="tgl_desc"?"selected":"" ?>>Urut: Tanggal ↓</option>
+        </select>
+
+    </form>
+
+    <!-- Table -->
     <table id="domainTable">
         <thead>
             <tr>
-                <th>Domain</th>
                 <th>Tipe</th>
-                <th>Status</th>
-                <th>Expiry Date</th>
-                <th>Hari Tersisa</th>
+                <th>Nama</th>
+                <th>Provider</th>
+                <th>Expire</th>
+                <th>Hari</th>
+                <th>Auto</th>
+                <th>Catatan</th>
+                <th>Aksi</th>
             </tr>
         </thead>
         <tbody>
-            <tr><td>example.com</td><td>Business</td><td>Active</td><td>2025-12-31</td><td>470</td></tr>
-            <tr><td>mydomain.net</td><td>Personal</td><td>Expired</td><td>2024-05-10</td><td>-120</td></tr>
-            <tr><td>project.org</td><td>Business</td><td>Active</td><td>2026-01-20</td><td>490</td></tr>
-            <tr><td>website.id</td><td>Personal</td><td>Pending</td><td>2025-03-15</td><td>180</td></tr>
-            <tr><td>startup.co</td><td>Business</td><td>Active</td><td>2025-11-10</td><td>400</td></tr>
-            <tr><td>blogku.me</td><td>Personal</td><td>Expired</td><td>2023-12-01</td><td>-300</td></tr>
-            <tr><td>shoponline.io</td><td>Business</td><td>Pending</td><td>2025-07-05</td><td>250</td></tr>
-            <tr><td>company.biz</td><td>Business</td><td>Active</td><td>2026-02-14</td><td>520</td></tr>
-            <tr><td>gamehub.gg</td><td>Personal</td><td>Active</td><td>2025-08-22</td><td>330</td></tr>
-            <tr><td>event.co.id</td><td>Business</td><td>Pending</td><td>2024-11-30</td><td>60</td></tr>
+        <?php if (count($filtered) > 0): ?>
+            <?php foreach ($filtered as $row): ?>
+                <tr>
+                    <td><span class="<?= strtolower($row['tipe']) == 'hosting' ? 'label-hosting' : 'label-domain' ?>">
+                        <?= htmlspecialchars($row['tipe']) ?></span></td>
+                    <td><?= htmlspecialchars($row['nama']) ?></td>
+                    <td><?= htmlspecialchars($row['provider']) ?></td>
+                    <td><?= $row['expire'] ?></td>
+                    <td class="<?= $row['hari'] < 0 ? 'red' : ($row['hari'] <= 30 ? 'yellow' : 'green') ?>">
+                        <?= $row['hari'] ?></td>
+                    <td><?= $row['auto'] ?></td>
+                    <td><?= htmlspecialchars($row['catatan']) ?></td>
+                    <td>
+                        <button class="btn btn-edit">Edit</button>
+                        <button class="btn btn-plus">+1y</button>
+                        <button class="btn btn-del">Hapus</button>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <tr><td colspan="8">Tidak ada data</td></tr>
+        <?php endif; ?>
         </tbody>
     </table>
 
-    <div class="pagination" id="pagination"></div>
-
+    <!-- Pagination -->
+    <div id="pagination"></div>
+    
     <script>
         let currentPage = 1;
-        let rowsPerPage = 5;
-
-        function applyFilters() {
-            let search = document.getElementById("searchInput").value.toLowerCase();
-            let type = document.getElementById("typeFilter").value;
-            let status = document.getElementById("statusFilter").value;
-            let sort = document.getElementById("sortFilter").value;
-            
-            let table = document.getElementById("domainTable").getElementsByTagName("tbody")[0];
-            let rows = Array.from(table.getElementsByTagName("tr"));
-
-            rows.forEach(row => {
-                let domain = row.cells[0].innerText.toLowerCase();
-                let tipe = row.cells[1].innerText;
-                let stat = row.cells[2].innerText;
-
-                let matchSearch = domain.indexOf(search) > -1;
-                let matchType = !type || tipe === type;
-                let matchStatus = !status || stat === status;
-
-                row.dataset.visible = (matchSearch && matchType && matchStatus) ? "true" : "false";
-            });
-
-            // Sorting
-            let visibleRows = rows.filter(r => r.dataset.visible === "true");
-            visibleRows.sort((a, b) => {
-                let valA = parseInt(a.cells[4].innerText);
-                let valB = parseInt(b.cells[4].innerText);
-                return sort === "asc" ? valA - valB : valB - valA;
-            });
-            visibleRows.forEach(r => table.appendChild(r));
-
-            currentPage = 1; 
-            displayTable();
-        }
+        const rowsPerPage = 10;
 
         function displayTable() {
-            let table = document.getElementById("domainTable").getElementsByTagName("tbody")[0];
-            let rows = Array.from(table.getElementsByTagName("tr")).filter(r => r.dataset.visible !== "false");
+            let input = document.getElementById("searchInput").value.toLowerCase();
+            let table = document.getElementById("domainTable");
+            let tr = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+            let filteredRows = [];
 
+            for (let i = 0; i < tr.length; i++) {
+                let rowText = tr[i].innerText.toLowerCase();
+                if (rowText.indexOf(input) > -1) {
+                    filteredRows.push(tr[i]);
+                }
+            }
+
+            // pagination
             let start = (currentPage - 1) * rowsPerPage;
             let end = start + rowsPerPage;
 
-            rows.forEach((row, index) => {
-                row.style.display = (index >= start && index < end) ? "" : "none";
-            });
+            for (let i = 0; i < tr.length; i++) {
+                tr[i].style.display = "none"; // hide semua dulu
+            }
+            for (let i = 0; i < filteredRows.length; i++) {
+                if (i >= start && i < end) {
+                    filteredRows[i].style.display = "";
+                }
+            }
 
-            setupPagination(rows.length);
+            setupPagination(filteredRows.length);
         }
 
         function setupPagination(totalRows) {
-            let pageCount = Math.ceil(totalRows / rowsPerPage);
             let pagination = document.getElementById("pagination");
             pagination.innerHTML = "";
+            let totalPages = Math.ceil(totalRows / rowsPerPage);
 
-            for (let i = 1; i <= pageCount; i++) {
+            for (let i = 1; i <= totalPages; i++) {
                 let btn = document.createElement("button");
                 btn.innerText = i;
-                btn.classList.add(i === currentPage ? "active" : "");
-                btn.addEventListener("click", function() {
+                if (i === currentPage) btn.classList.add("active");
+                btn.onclick = function () {
                     currentPage = i;
                     displayTable();
-                });
+                };
                 pagination.appendChild(btn);
             }
         }
 
-        // Init
-        window.onload = () => {
-            let rows = document.getElementById("domainTable").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
-            Array.from(rows).forEach(r => r.dataset.visible = "true");
-            applyFilters();
+        window.onload = function() {
+            displayTable();
         };
     </script>
+<?php include 'footer.php'; ?>
 </body>
 </html>
-
-<?php include 'footer.php'; ?>
