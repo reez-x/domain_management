@@ -49,7 +49,15 @@ usort($filtered, function($a, $b) use ($sort) {
     <style>
         body { font-family: Arial, sans-serif; background: #0f172a; color: #fff; padding: 20px; }
         h1 { margin-bottom: 20px; }
-        .filters { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; max-width: 400px; }
+        .filters { display: flex; flex-direction: row; gap: 10px; margin-bottom: 20px; max-width: 400px; }
+        .filters input, 
+        .filters select, 
+        .filters button {
+          flex: none;
+        }
+        .filters input[type="text"] {
+          width: 250px;
+        }
         select, input { padding: 10px; border-radius: 8px; border: none; background: #161b22; color: white; width: 100%; }
         button { padding: 10px; border-radius: 8px; border: none; background: #0284c7; color: white; cursor: pointer; }
         table { border-collapse: collapse; width: 100%; background: #1e293b; border-radius: 10px; overflow: hidden; }
