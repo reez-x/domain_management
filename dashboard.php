@@ -155,10 +155,21 @@ usort($filtered, function($a, $b) use ($sort) {
                     <td><?= $row['auto'] ?></td>
                     <td><?= htmlspecialchars($row['catatan']) ?></td>
                     <td>
-                        <button class="btn btn-edit">Edit</button>
-                        <button class="btn btn-plus">+1y</button>
-                        <button class="btn btn-del">Hapus</button>
-                    </td>
+                    <button class="btn btn-edit" 
+                            onclick="openEditModal(
+                                '<?= htmlspecialchars($row['tipe']) ?>',
+                                '<?= htmlspecialchars($row['nama']) ?>',
+                                '<?= htmlspecialchars($row['provider']) ?>',
+                                '', 
+                                '<?= $row['expire'] ?>',
+                                '', 
+                                '', 
+                                '<?= $row['auto'] ?>',
+                                '<?= htmlspecialchars($row['catatan']) ?>'
+                            )">Edit</button>
+                    <button class="btn btn-plus">+1y</button>
+                    <button class="btn btn-del">Hapus</button>
+                </td>
                 </tr>
             <?php endforeach; ?>
         <?php else: ?>
@@ -167,10 +178,99 @@ usort($filtered, function($a, $b) use ($sort) {
         </tbody>
     </table>
 
+    <!-- Modal Form -->
+    <div id="editModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); justify-content:center; align-items:center;">
+    <div class="modal-content" style="background:#0f172a; padding:20px; border-radius:10px; width:650px; position:relative;">
+    <span id="closeModal" style="position:absolute; top:10px; right:15px; cursor:pointer; font-size:20px; color:white;">&times;</span>
+    <h2>Edit Item</h2>
+    <form id="editForm" style="display:flex; flex-wrap:wrap; gap:15px;">
+      <div style="flex:1 1 48%;">
+        <label>Tipe</label>
+        <select id="editType" required>
+          <option value="Domain">Domain</option>
+          <option value="Hosting">Hosting</option>
+        </select>
+      </div>
+      <div style="flex:1 1 48%;">
+        <label>Nama</label>
+        <input id="editName" placeholder="contohku.com / VPS Project" required />
+      </div>
+      <div style="flex:1 1 48%;">
+        <label>Registrar / Provider</label>
+        <input id="editProvider" placeholder="Niagahoster / Cloudflare / IDCloudHost" />
+      </div>
+      <div style="flex:1 1 48%;">
+        <label>ID Layanan (opsional)</label>
+        <input id="editServiceId" placeholder="INV-123 / SID-456" />
+      </div>
+      <div style="flex:1 1 48%;">
+        <label>Tanggal Expire</label>
+        <input id="editExpire" type="date" required />
+      </div>
+      <div style="flex:1 1 48%;">
+        <label>Biaya (opsional)</label>
+        <input id="editCost" type="number" min="0" step="0.01" placeholder="0" />
+      </div>
+      <div style="flex:1 1 48%;">
+        <label>Mata Uang</label>
+        <input id="editCurrency" placeholder="IDR / USD" />
+      </div>
+      <div style="flex:1 1 48%; display:flex; align-items:center; gap:10px;">
+        <input id="editAuto" type="checkbox" />
+        <label>Auto-Renew ON</label>
+      </div>
+      <div style="flex:1 1 100%;">
+        <label>Catatan</label>
+        <textarea id="editNote" placeholder="Keterangan tambahan…"></textarea>
+      </div>
+      <div style="flex:1 1 100%; display:flex; justify-content:flex-end; gap:10px;">
+        <button type="button" id="btnCancel" style="background:#334155;color:white;padding:10px;border:none;border-radius:6px;cursor:pointer;">Batal</button>
+        <button type="submit" style="background:#0284c7;color:white;padding:10px;border:none;border-radius:6px; cursor:pointer;">Simpan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
     <!-- Pagination -->
     <div id="pagination"></div>
     
     <script>
+        const editModal = document.getElementById("editModal");
+const closeModal = document.getElementById("closeModal");
+
+function openEditModal(tipe, nama, provider, serviceId, expire, cost, currency, auto, note) {
+    document.getElementById("editType").value = tipe;
+    document.getElementById("editName").value = nama;
+    document.getElementById("editProvider").value = provider;
+    document.getElementById("editExpire").value = expire;
+    document.getElementById("editAuto").checked = (auto === "ON");
+    document.getElementById("editNote").value = note;
+
+    editModal.style.display = "flex";
+}
+
+// Tutup modal
+closeModal.onclick = () => editModal.style.display = "none";
+window.onclick = (e) => { if(e.target === editModal) editModal.style.display = "none"; }
+
+// Submit form
+document.getElementById("editForm").onsubmit = function(e){
+    e.preventDefault();
+    // Ambil data dari form
+    let tipe = document.getElementById("editType").value;
+    let nama = document.getElementById("editName").value;
+    let provider = document.getElementById("editProvider").value;
+    let expire = document.getElementById("editExpire").value;
+    let auto = document.getElementById("editAuto").checked ? "ON" : "OFF";
+    let note = document.getElementById("editNote").value;
+
+    // TODO: kirim data via AJAX ke PHP untuk update db
+    console.log({tipe, nama, provider, expire, auto, note});
+
+    // Tutup modal setelah submit
+    editModal.style.display = "none";
+}
+
         let currentPage = 1;
         const rowsPerPage = 10;
 
