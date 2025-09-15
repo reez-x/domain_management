@@ -47,7 +47,7 @@
     .stat .num{font-size:18px;font-weight:800}
     .stat small{color:var(--muted)}
     table{width:100%;border-collapse:separate;border-spacing:0 8px}
-    thead th{color:var(--muted);font-weight:600;text-align:left;font-size:12px;padding:0 10px}
+    thead th{color:var(--muted);font-weight:800;text-align:center;font-size:12px;padding:0 10px}
     tbody tr{background:var(--card);border:1px solid var(--border)}
     tbody td{padding:10px}
     tbody tr{border-radius:12px}

@@ -66,9 +66,23 @@ usort($filtered, function($a, $b) use ($sort) {
         .red { color: #ef4444; font-weight: bold; }
         .yellow { color: #facc15; font-weight: bold; }
         .green { color: #22c55e; font-weight: bold; }
-        #pagination { margin-top: 20px; }
-        #pagination button { margin: 2px; padding: 6px 10px; border: none; border-radius: 5px; }
-        #pagination button.active { background: #0284c7; color: #fff; }
+        #pagination { margin-top: 20px; display: flex; justify-content: center;}
+        #pagination button {
+          margin: 2px;
+          padding: 6px 10px;
+          border: 2px solid #0284c7;   /* border biru */
+          border-radius: 5px;
+          background: transparent;     /* transparan */
+          color: #0284c7;              /* teks biru */
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        #pagination button.active {
+          background: #0284c7;
+          color: #fff;
+          font-weight: bold;
+          transform: scale(1.05);
+        }
     </style>
 </head>
 <body>
