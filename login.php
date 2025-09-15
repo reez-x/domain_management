@@ -63,6 +63,13 @@ if (isset($_SESSION['user_id'])) {
     <div class="row justify-content-center">
       <div class="col-md-6">
 
+      <?php if (isset($_SESSION['success'])): ?>
+    <div style="background-color: #d4edda; color: #155724; padding: 10px; border: 1px solid #c3e6cb; border-radius: 5px; margin-bottom: 15px;">
+        <?= htmlspecialchars($_SESSION['success']); ?>
+    </div>
+    <?php unset($_SESSION['success']); ?>
+<?php endif; ?>
+
         <?php if (isset($_SESSION["error"])): ?>
           <div id="notif">
             <?php 
@@ -89,6 +96,9 @@ if (isset($_SESSION['user_id'])) {
                 <input type="password" name="password" id="password" class="form-control">
               </div>
               <button type="submit" class="btn btn-primary btn-block">Login</button>
+                            <div class="mt-3 text-center">
+                Belum punya akun? <a href="register.php">Register di sini</a>
+              </div>
             </form>
           </div>
         </div>
