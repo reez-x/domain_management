@@ -74,16 +74,6 @@ usort($filtered, function($a, $b) use ($sort) {
 <body>
     <h1>Domain Management Dashboard</h1>
 
-    <!-- Tombol Logout -->
-<div style="margin-bottom:20px;">
-    <form action="logout.php" method="post" style="display:inline;">
-        <button type="submit" 
-                style="background:#ef4444; color:#fff; border:none; padding:10px 20px; border-radius:8px; cursor:pointer;">
-            Logout
-        </button>
-    </form>
-</div>
-
     <!-- Filter Form -->
     <form method="get" class="filters">
         <div style="display:flex; gap:10px;">
@@ -213,5 +203,81 @@ usort($filtered, function($a, $b) use ($sort) {
         };
     </script>
 <?php include 'footer.php'; ?>
+
+<!-- Modal Form -->
+<div id="itemModal" class="modal">
+  <div class="modal-content">
+    <span class="modal-close" id="btnCloseModal">&times;</span>
+    <!-- Form -->
+    <div class="card">
+      <form id="itemForm" class="row" autocomplete="off">
+        <input type="hidden" id="itemId" />
+        <div class="col">
+          <label for="type">Tipe</label>
+          <select id="type" required>
+            <option value="domain">Domain</option>
+            <option value="hosting">Hosting</option>
+          </select>
+        </div>
+        <div class="col">
+          <label for="name">Nama</label>
+          <input id="name" placeholder="contohku.com / VPS Project" required />
+        </div>
+        <div class="col">
+          <label for="provider">Registrar / Provider</label>
+          <input id="provider" placeholder="Niagahoster / Cloudflare / IDCloudHost" />
+        </div>
+        <div class="col">
+          <label for="serviceId">ID Layanan (opsional)</label>
+          <input id="serviceId" placeholder="INV-123 / SID-456" />
+        </div>
+        <div class="col">
+          <label for="expiry">Tanggal Expire</label>
+          <input id="expiry" type="date" required />
+        </div>
+        <div class="col">
+          <label for="cost">Biaya (opsional)</label>
+          <input id="cost" type="number" min="0" step="0.01" placeholder="0" />
+        </div>
+        <div class="col">
+          <label for="currency">Mata Uang</label>
+          <input id="currency" placeholder="IDR / USD" />
+        </div>
+        <div class="col" style="align-self:end">
+          <label><input id="autoRenew" type="checkbox" /> Auto-Renew ON</label>
+        </div>
+        <div class="col" style="flex:1 1 100%">
+          <label for="note">Catatan</label>
+          <textarea id="note" placeholder="Keterangan tambahan…"></textarea>
+        </div>
+        <div class="col" style="flex:1 1 100%;display:flex;gap:8px;justify-content:flex-end">
+          <button type="button" class="secondary" id="btnReset">Bersihkan</button>
+          <button type="submit" id="btnSave">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  const modal = document.getElementById("itemModal");
+  const btnOpen = document.getElementById("btnAddItem");
+  const btnClose = document.getElementById("btnCloseModal");
+
+  btnOpen.onclick = () => {
+    modal.style.display = "flex"; // tampilkan modal
+  };
+
+  btnClose.onclick = () => {
+    modal.style.display = "none"; // sembunyikan modal
+  };
+
+  // Tutup jika klik luar modal
+  window.onclick = (e) => {
+    if (e.target === modal) {
+      modal.style.display = "none";
+    }
+  };
+</script>
 </body>
 </html>
