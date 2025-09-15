@@ -114,7 +114,7 @@
         <div class="muted">Kelola masa aktif domain & hosting • data tersimpan lokal di browser (localStorage)</div>
       </div>
       <div class="actions">
-        <button id="btnExportCsv" title="Ekspor CSV">Ekspor CSV</button>
+        <button onclick="window.location.href='export_csv.php'" id="btnExportCsv" title="Ekspor CSV">Ekspor CSV</button>
         <button id="btnExportJson" class="secondary" title="Ekspor JSON">Ekspor JSON</button>
         <label class="btn ghost" for="fileImport">Impor</label>
         <input id="fileImport" type="file" accept=".csv,.json" class="hidden" />
