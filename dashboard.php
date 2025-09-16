@@ -84,7 +84,7 @@ usort($filtered, function($a, $b) use ($sort) {
           border-radius: 8px; 
           border: none; 
           background: #161b22; 
-          color: #fff; 
+          color: white; 
           width: 100%; 
         }
 
@@ -93,7 +93,7 @@ usort($filtered, function($a, $b) use ($sort) {
           border-radius: 8px; 
           border: none; 
           background: #0284c7; 
-          color: #fff; 
+          color: white; 
           cursor: pointer; 
         }
 
@@ -123,7 +123,7 @@ usort($filtered, function($a, $b) use ($sort) {
         }
         .label-hosting { 
           background: #3f1d4a; 
-          color: #fff; 
+          color: white; 
           padding: 4px 10px; 
           border-radius: 20px; 
           font-size: 12px; 
@@ -131,7 +131,7 @@ usort($filtered, function($a, $b) use ($sort) {
 
         .label-domain  { 
           background: #0f3a46; 
-          color: #fff; 
+          color: white; 
           padding: 4px 10px; 
           border-radius: 20px; 
           font-size: 12px; 
@@ -148,17 +148,17 @@ usort($filtered, function($a, $b) use ($sort) {
 
         .btn-edit { 
           background: #475569; 
-          color: #fff; 
+          color: white; 
         }
 
         .btn-plus { 
           background: #0284c7; 
-          color: #fff; 
+          color: white; 
         }
 
         .btn-del  { 
           background: #334155; 
-          color: #fff; 
+          color: white; 
         }
 
         .red { 
@@ -194,10 +194,56 @@ usort($filtered, function($a, $b) use ($sort) {
         }
         #pagination button.active {
           background: #0284c7;
-          color: #fff;
+          color: white;
           font-weight: bold;
           transform: scale(1.05);
         }    
+
+        select, input { padding: 10px; border-radius: 8px; border: none; background: #161b22; color: white; width: 100%; }
+        button { padding: 10px; border-radius: 8px; border: none; background: #0284c7; color: white; cursor: pointer; }
+        table { border-collapse: collapse; width: 100%; background: #1e293b; border-radius: 10px; overflow: hidden; }
+        th, td { padding: 12px; text-align: center; }
+        th { background-color: #334155; }
+        tr:nth-child(even) { background-color: #1e293b; }
+        tr:nth-child(odd) { background-color: #0f172a; }
+        .label-hosting { background: #3f1d4a; color: #fff; padding: 4px 10px; border-radius: 20px; font-size: 12px; }
+        .label-domain  { background: #0f3a46; color: #fff; padding: 4px 10px; border-radius: 20px; font-size: 12px; }
+        .btn { padding: 6px 12px; margin: 2px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
+        .btn-edit { background: #475569; color: #fff; }
+        .btn-plus { background: #0284c7; color: #fff; }
+        .btn-del  { background: #334155; color: #fff; }
+        .red { color: #ef4444; font-weight: bold; }
+        .yellow { color: #facc15; font-weight: bold; }
+        .green { color: #22c55e; font-weight: bold; }
+
+        #pagination {
+          display: flex;
+          justify-content: center; /* bikin konten ke tengah */
+          margin-top: 20px;
+        }
+
+        .pagination {
+          display: flex;
+          gap: 4px; /* jarak antar tombol */
+        }
+
+        .pagination a {
+          color: white; /* teks default */
+          padding: 8px 16px;
+          text-decoration: none;
+          border-radius: 5px;
+          background-color: transparent;
+          transition: 0.3s;
+        }
+
+        .pagination a.active {
+          background-color: #0284c7; /* biru aktif */
+          color: white;
+        }
+
+        .pagination a:hover:not(.active) {
+          background-color: #334155; /* abu hover */
+        }
     </style>
 
 
@@ -267,6 +313,7 @@ usort($filtered, function($a, $b) use ($sort) {
                     <td>
                     <!-- Tombol Edit di tabel -->
                     <button class="btn btn-edit" 
+<<<<<<< HEAD
                     data-id="<?= $row['id'] ?>"
                     data-type="<?= htmlspecialchars($row['tipe']) ?>"
                     data-name="<?= htmlspecialchars($row['nama']) ?>"
@@ -286,6 +333,21 @@ usort($filtered, function($a, $b) use ($sort) {
                         <button type="submit" class="btn btn-del">Hapus</button>
                     </form>
 
+=======
+                            onclick="openEditModal(
+                                '<?= htmlspecialchars($row['tipe']) ?>',
+                                '<?= htmlspecialchars($row['nama']) ?>',
+                                '<?= htmlspecialchars($row['provider']) ?>',
+                                '', 
+                                '<?= $row['expire'] ?>',
+                                '', 
+                                '', 
+                                '<?= $row['auto'] ?>',
+                                '<?= htmlspecialchars($row['catatan']) ?>'
+                            )">Edit</button>
+                    <button class="btn btn-plus" onclick="openPlusOneYearModal(<?= $row['id'] ?>)">+1y</button>
+                    <button class="btn btn-del">Hapus</button>
+>>>>>>> d76e84e63c695787cfaa67f79d3503278e63005c
                 </td>
                 </tr>
             <?php endforeach; ?>
@@ -305,6 +367,7 @@ usort($filtered, function($a, $b) use ($sort) {
             <form id="editForm" method="post" action="update.php" class="row" autocomplete="off">
               <input type="hidden" id="editId" name="id" />
 
+<<<<<<< HEAD
               <div class="col">
                 <label for="editType">Tipe</label>
                 <select id="editType" name="type" required>
@@ -312,6 +375,45 @@ usort($filtered, function($a, $b) use ($sort) {
                   <option value="hosting">Hosting</option>
                 </select>
               </div>
+=======
+<!-- Modal Konfirmasi +1 Tahun -->
+<div id="plusOneYearModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center;">
+  <div class="modal-content" style="background:#0f172a; padding:20px; border-radius:10px; width:400px; text-align:center; position:relative;">
+    <span id="closePlusOneYearModal" style="position:absolute; top:10px; right:15px; cursor:pointer; font-size:20px; color:white;">&times;</span>
+    <h2>Konfirmasi</h2>
+    <p style="margin:20px 0;">Apakah Anda yakin ingin menambah <strong>1 tahun</strong> pada domain ini?</p>
+    
+    <input type="hidden" id="plusOneYearDomainId">
+
+    <div style="display:flex; justify-content:center; gap:10px;">
+      <button id="confirmPlusOneYear" style="background:#0284c7;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;">Ya</button>
+      <button id="cancelPlusOneYear" style="background:#334155;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;">Batal</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Notifikasi -->
+<div id="notificationModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center;">
+  <div class="modal-content" style="background:#0f172a; padding:20px; border-radius:10px; width:400px; text-align:center; position:relative;">
+    <span id="closeNotificationModal" style="position:absolute; top:10px; right:15px; cursor:pointer; font-size:20px; color:white;">&times;</span>
+    <h2 id="notificationTitle" style="color:white; margin-bottom:10px;"></h2>
+    <p id="notificationMessage" style="color:#cbd5e1;"></p>
+    <div style="margin-top:20px;">
+      <button id="notificationOkBtn" style="background:#0284c7;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;">OK</button>
+    </div>
+  </div>
+</div>
+
+
+
+    <!-- Pagination -->
+    <div id="pagination" class="pagination"></div>
+
+    
+    <script>
+        const editModal = document.getElementById("editModal");
+const closeModal = document.getElementById("closeModal");
+>>>>>>> d76e84e63c695787cfaa67f79d3503278e63005c
 
               <div class="col">
                 <label for="editName">Nama</label>
@@ -343,6 +445,7 @@ usort($filtered, function($a, $b) use ($sort) {
                 <input id="editCurrency" name="currency" placeholder="IDR / USD" />
               </div>
 
+<<<<<<< HEAD
               <div class="col" style="align-self:end">
                 <label>
                   <input id="editAutoRenew" name="autoRenew" type="checkbox" /> Auto-Renew ON
@@ -508,6 +611,110 @@ usort($filtered, function($a, $b) use ($sort) {
               <button type="submit" id="btnSave">Simpan</button>
             </div>
           </form>
+=======
+    let currentPage = 1;
+    const rowsPerPage = 10;
+
+    function displayTable() {
+        let input = document.getElementById("searchInput").value.toLowerCase();
+        let table = document.getElementById("domainTable");
+        let tr = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+        let filteredRows = [];
+
+        for (let i = 0; i < tr.length; i++) {
+            let rowText = tr[i].innerText.toLowerCase();
+            if (rowText.indexOf(input) > -1) {
+                filteredRows.push(tr[i]);
+            }
+        }
+
+        // pagination
+        let start = (currentPage - 1) * rowsPerPage;
+        let end = start + rowsPerPage;
+
+        for (let i = 0; i < tr.length; i++) {
+            tr[i].style.display = "none"; // hide semua dulu
+        }
+        for (let i = 0; i < filteredRows.length; i++) {
+            if (i >= start && i < end) {
+                filteredRows[i].style.display = "";
+            }
+        }
+
+        setupPagination(filteredRows.length);
+    }
+
+    function setupPagination(totalRows) {
+        let pagination = document.getElementById("pagination");
+        pagination.innerHTML = "";
+        let totalPages = Math.ceil(totalRows / rowsPerPage);
+
+        if (totalPages <= 1) return; // tidak perlu pagination kalau cuma 1 halaman
+
+        // tombol « (prev)
+        if (currentPage > 1) {
+            let prev = document.createElement("a");
+            prev.innerHTML = "&laquo;";
+            prev.href = "#";
+            prev.onclick = function (e) {
+                e.preventDefault();
+                currentPage--;
+                displayTable();
+            };
+            pagination.appendChild(prev);
+        }
+
+        // nomor halaman
+        for (let i = 1; i <= totalPages; i++) {
+            let link = document.createElement("a");
+            link.innerText = i;
+            link.href = "#";
+            if (i === currentPage) link.classList.add("active");
+            link.onclick = function (e) {
+                e.preventDefault();
+                currentPage = i;
+                displayTable();
+            };
+            pagination.appendChild(link);
+        }
+
+        // tombol » (next)
+        if (currentPage < totalPages) {
+            let next = document.createElement("a");
+            next.innerHTML = "&raquo;";
+            next.href = "#";
+            next.onclick = function (e) {
+                e.preventDefault();
+                currentPage++;
+                displayTable();
+            };
+            pagination.appendChild(next);
+        }
+    }
+
+    window.onload = function() {
+        displayTable();
+    };
+
+    </script>
+
+<?php include 'footer.php'; ?>
+
+<!-- Modal Form -->
+<div id="itemModal" class="modal">
+  <div class="modal-content">
+    <span class="modal-close" id="btnCloseModal">&times;</span>
+    <!-- Form -->
+    <div class="card">
+      <form id="itemForm" class="row" autocomplete="off">
+        <input type="hidden" id="itemId" />
+        <div class="col">
+          <label for="type">Tipe</label>
+          <select id="type" required>
+            <option value="domain">Domain</option>
+            <option value="hosting">Hosting</option>
+          </select>
+>>>>>>> d76e84e63c695787cfaa67f79d3503278e63005c
         </div>
       </div>
     </div>
@@ -532,6 +739,82 @@ usort($filtered, function($a, $b) use ($sort) {
     }
   };
 
+<<<<<<< HEAD
+=======
+  const plusOneYearModal = document.getElementById("plusOneYearModal");
+  const closePlusOneYearModal = document.getElementById("closePlusOneYearModal");
+  const cancelPlusOneYear = document.getElementById("cancelPlusOneYear");
+  const confirmPlusOneYear = document.getElementById("confirmPlusOneYear");
+
+  // Buka modal
+  function openPlusOneYearModal(domainId) {
+    document.getElementById("plusOneYearDomainId").value = domainId;
+    plusOneYearModal.style.display = "flex";
+  }
+
+  // Tutup modal
+  function closePlusYearModal() {
+    plusOneYearModal.style.display = "none";
+  }
+
+  closePlusOneYearModal.onclick = closePlusYearModal;
+  cancelPlusOneYear.onclick = closePlusYearModal;
+
+  confirmPlusOneYear.onclick = function() {
+  const domainId = document.getElementById("plusOneYearDomainId").value;
+
+  fetch('update_expire.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: `id=${domainId}`
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      showNotification("Sukses", "Tanggal expire berhasil ditambah 1 tahun!", true);
+    } else {
+      showNotification("Gagal", "Tidak dapat memperbarui tanggal expire!", false);
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    showNotification("Error", "Terjadi kesalahan saat memperbarui data!", false);
+  });
+
+  closePlusYearModal();
+};
+
+
+  const notificationModal = document.getElementById("notificationModal");
+  const closeNotificationModal = document.getElementById("closeNotificationModal");
+  const notificationOkBtn = document.getElementById("notificationOkBtn");
+
+  function showNotification(title, message, reload = false) {
+    document.getElementById("notificationTitle").innerText = title;
+    document.getElementById("notificationMessage").innerText = message;
+    notificationModal.style.display = "flex";
+
+    notificationOkBtn.onclick = function() {
+      notificationModal.style.display = "none";
+      if (reload) {
+        location.reload(); 
+      }
+    };
+  }
+
+  closeNotificationModal.onclick = () => {
+    notificationModal.style.display = "none";
+  };
+
+  window.onclick = (e) => {
+    if (e.target === notificationModal) {
+      notificationModal.style.display = "none";
+    }
+  };
+
+>>>>>>> d76e84e63c695787cfaa67f79d3503278e63005c
 
 
 </script>
