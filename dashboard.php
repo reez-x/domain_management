@@ -113,26 +113,26 @@ usort($filtered, function($a, $b) use ($sort) {
     <h1>Domain Management Dashboard</h1>
 
     <!-- Filter Form -->
-    <form method="get" class="filters">
-        <div style="display:flex; gap:10px;">
-            <input type="text" id="searchInput" name="search" placeholder="Cari nama / provider..." value="<?= htmlspecialchars($search) ?>">
-            <button type="submit">Cari</button>
-        </div>
+    <form method="get" style="display:flex; flex-wrap:nowrap; gap:10px; align-items:center; max-width:100%; margin-bottom:20px; overflow-x:auto;">
+        <input type="text" id="searchInput" name="search" placeholder="Cari nama / provider..." 
+              value="<?= htmlspecialchars($search) ?>" style="padding:10px; border-radius:8px; border:none; background:#161b22; color:white; min-width:200px; flex:1;">
 
-        <select name="type" onchange="this.form.submit()">
+        <button type="submit" style="padding:10px 15px; border-radius:8px; border:none; background:#0284c7; color:white; cursor:pointer;">Cari</button>
+
+        <select name="type" onchange="this.form.submit()" style="padding:10px; border-radius:8px; border:none; background:#161b22; color:white;">
             <option value="">Semua Tipe</option>
             <option value="Domain" <?= $type=="Domain"?"selected":"" ?>>Domain</option>
             <option value="Hosting" <?= $type=="Hosting"?"selected":"" ?>>Hosting</option>
         </select>
 
-        <select name="status" onchange="this.form.submit()">
+        <select name="status" onchange="this.form.submit()" style="padding:10px; border-radius:8px; border:none; background:#161b22; color:white;">
             <option value="">Semua Status</option>
             <option value="JatuhTempo"  <?= $status=="JatuhTempo"?"selected":"" ?>>Jatuh tempo ≤ 30</option>
             <option value="Expired" <?= $status=="Expired"?"selected":"" ?>>Expired</option>
             <option value="AutoRenew" <?= $status=="AutoRenew"?"selected":"" ?>>Auto-Renew ON</option>
         </select>
 
-        <select name="sort" onchange="this.form.submit()">
+        <select name="sort" onchange="this.form.submit()" style="padding:10px; border-radius:8px; border:none; background:#161b22; color:white;">
             <option value="asc"   <?= $sort=="asc"?"selected":"" ?>>Urut: Hari Tersisa ↑</option>
             <option value="desc"  <?= $sort=="desc"?"selected":"" ?>>Urut: Hari Tersisa ↓</option>
             <option value="nama_asc"  <?= $sort=="nama_asc"?"selected":"" ?>>Urut: Nama A-Z</option>
@@ -140,8 +140,8 @@ usort($filtered, function($a, $b) use ($sort) {
             <option value="tgl_asc"   <?= $sort=="tgl_asc"?"selected":"" ?>>Urut: Tanggal ↑</option>
             <option value="tgl_desc"  <?= $sort=="tgl_desc"?"selected":"" ?>>Urut: Tanggal ↓</option>
         </select>
-
     </form>
+
 
     <!-- Table -->
     <table id="domainTable">
@@ -168,7 +168,7 @@ usort($filtered, function($a, $b) use ($sort) {
                     <td><?= $row['expire'] ?></td>
                     <td class="<?= $row['hari'] < 0 ? 'red' : ($row['hari'] <= 30 ? 'yellow' : 'green') ?>">
                         <?= $row['hari'] ?></td>
-                    <td><?= $row['auto'] ?></td>
+                    <td><?= $row['auto'] == 1 ? 'ON' : 'OFF' ?></td>
                     <td><?= htmlspecialchars($row['catatan']) ?></td>
                     <td>
 
