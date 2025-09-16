@@ -116,7 +116,7 @@
       <div class="actions">
         <button onclick="window.location.href='export_csv.php'" id="btnExportCsv" title="Ekspor CSV">Ekspor CSV</button>
         <button onclick="window.location.href='export_json.php'" id="btnExportJson" title="Ekspor JSON" class="secondary">Ekspor JSON</button>
-        <label class="btn ghost" for="fileImport">Impor</label>
+        <button id="btnOpenImport" class="btn">Import</button>
         <input id="fileImport" type="file" accept=".csv,.json" class="hidden" />
 
         <!-- button untuk popup -->
