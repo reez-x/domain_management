@@ -74,23 +74,38 @@ usort($filtered, function($a, $b) use ($sort) {
         .red { color: #ef4444; font-weight: bold; }
         .yellow { color: #facc15; font-weight: bold; }
         .green { color: #22c55e; font-weight: bold; }
-        #pagination { margin-top: 20px; display: flex; justify-content: center;}
-        #pagination button {
-          margin: 2px;
-          padding: 6px 10px;
-          border: 2px solid #0284c7;   /* border biru */
-          border-radius: 5px;
-          background: transparent;     /* transparan */
-          color: #0284c7;              /* teks biru */
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-        #pagination button.active {
-          background: #0284c7;
-          color: #fff;
-          font-weight: bold;
-          transform: scale(1.05);
-        }
+
+#pagination {
+  display: flex;
+  justify-content: center; /* bikin konten ke tengah */
+  margin-top: 20px;
+}
+
+.pagination {
+  display: flex;
+  gap: 4px; /* jarak antar tombol */
+}
+
+.pagination a {
+  color: white; /* teks default */
+  padding: 8px 16px;
+  text-decoration: none;
+  border-radius: 5px;
+  background-color: transparent;
+  transition: 0.3s;
+}
+
+.pagination a.active {
+  background-color: #0284c7; /* biru aktif */
+  color: white;
+}
+
+.pagination a:hover:not(.active) {
+  background-color: #334155; /* abu hover */
+}
+
+
+
     </style>
 </head>
 <body>
@@ -232,7 +247,8 @@ usort($filtered, function($a, $b) use ($sort) {
 </div>
 
     <!-- Pagination -->
-    <div id="pagination"></div>
+    <div id="pagination" class="pagination"></div>
+
     
     <script>
         const editModal = document.getElementById("editModal");
@@ -271,59 +287,92 @@ document.getElementById("editForm").onsubmit = function(e){
     editModal.style.display = "none";
 }
 
-        let currentPage = 1;
-        const rowsPerPage = 10;
+    let currentPage = 1;
+    const rowsPerPage = 10;
 
-        function displayTable() {
-            let input = document.getElementById("searchInput").value.toLowerCase();
-            let table = document.getElementById("domainTable");
-            let tr = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
-            let filteredRows = [];
+    function displayTable() {
+        let input = document.getElementById("searchInput").value.toLowerCase();
+        let table = document.getElementById("domainTable");
+        let tr = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+        let filteredRows = [];
 
-            for (let i = 0; i < tr.length; i++) {
-                let rowText = tr[i].innerText.toLowerCase();
-                if (rowText.indexOf(input) > -1) {
-                    filteredRows.push(tr[i]);
-                }
-            }
-
-            // pagination
-            let start = (currentPage - 1) * rowsPerPage;
-            let end = start + rowsPerPage;
-
-            for (let i = 0; i < tr.length; i++) {
-                tr[i].style.display = "none"; // hide semua dulu
-            }
-            for (let i = 0; i < filteredRows.length; i++) {
-                if (i >= start && i < end) {
-                    filteredRows[i].style.display = "";
-                }
-            }
-
-            setupPagination(filteredRows.length);
-        }
-
-        function setupPagination(totalRows) {
-            let pagination = document.getElementById("pagination");
-            pagination.innerHTML = "";
-            let totalPages = Math.ceil(totalRows / rowsPerPage);
-
-            for (let i = 1; i <= totalPages; i++) {
-                let btn = document.createElement("button");
-                btn.innerText = i;
-                if (i === currentPage) btn.classList.add("active");
-                btn.onclick = function () {
-                    currentPage = i;
-                    displayTable();
-                };
-                pagination.appendChild(btn);
+        for (let i = 0; i < tr.length; i++) {
+            let rowText = tr[i].innerText.toLowerCase();
+            if (rowText.indexOf(input) > -1) {
+                filteredRows.push(tr[i]);
             }
         }
 
-        window.onload = function() {
-            displayTable();
-        };
+        // pagination
+        let start = (currentPage - 1) * rowsPerPage;
+        let end = start + rowsPerPage;
+
+        for (let i = 0; i < tr.length; i++) {
+            tr[i].style.display = "none"; // hide semua dulu
+        }
+        for (let i = 0; i < filteredRows.length; i++) {
+            if (i >= start && i < end) {
+                filteredRows[i].style.display = "";
+            }
+        }
+
+        setupPagination(filteredRows.length);
+    }
+
+    function setupPagination(totalRows) {
+        let pagination = document.getElementById("pagination");
+        pagination.innerHTML = "";
+        let totalPages = Math.ceil(totalRows / rowsPerPage);
+
+        if (totalPages <= 1) return; // tidak perlu pagination kalau cuma 1 halaman
+
+        // tombol « (prev)
+        if (currentPage > 1) {
+            let prev = document.createElement("a");
+            prev.innerHTML = "&laquo;";
+            prev.href = "#";
+            prev.onclick = function (e) {
+                e.preventDefault();
+                currentPage--;
+                displayTable();
+            };
+            pagination.appendChild(prev);
+        }
+
+        // nomor halaman
+        for (let i = 1; i <= totalPages; i++) {
+            let link = document.createElement("a");
+            link.innerText = i;
+            link.href = "#";
+            if (i === currentPage) link.classList.add("active");
+            link.onclick = function (e) {
+                e.preventDefault();
+                currentPage = i;
+                displayTable();
+            };
+            pagination.appendChild(link);
+        }
+
+        // tombol » (next)
+        if (currentPage < totalPages) {
+            let next = document.createElement("a");
+            next.innerHTML = "&raquo;";
+            next.href = "#";
+            next.onclick = function (e) {
+                e.preventDefault();
+                currentPage++;
+                displayTable();
+            };
+            pagination.appendChild(next);
+        }
+    }
+
+    window.onload = function() {
+        displayTable();
+    };
+
     </script>
+
 <?php include 'footer.php'; ?>
 
 <!-- Modal Form -->
