@@ -297,7 +297,39 @@ usort($filtered, function($a, $b) use ($sort) {
   </div>
 </div>
 
+<!-- Modal Import -->
+<div id="importModal" class="modal">
+  <div class="modal-content">
+    <span class="modal-close" onclick="document.getElementById('importModal').style.display='none'">&times;</span>
+    <h3>Import Data</h3>
+    <form action="import.php" method="post" enctype="multipart/form-data">
+      <label for="file">Pilih file (CSV/JSON):</label>
+      <input type="file" name="file" id="file" accept=".csv,.json" required>
+      <br><br>
+      <button type="submit" name="import">Upload & Cek</button>
+    </form>
+  </div>
+</div>
 
+<?php if (isset($_GET['show_import_confirm'])): ?>
+<div class="modal" style="display:flex;">
+  <div class="modal-content">
+    <h3>Konfirmasi Import</h3>
+    <?php if (!empty($_SESSION['duplicates']) && $_SESSION['duplicates'] > 0): ?>
+      <p>Ditemukan <b><?= $_SESSION['duplicates'] ?></b> data duplikat.</p>
+      <form action="save_import.php" method="post">
+        <button type="submit" name="action" value="overwrite">Timpa Semua</button>
+        <button type="submit" name="action" value="skip">Pertahankan Lama</button>
+      </form>
+    <?php else: ?>
+      <p>Tidak ada data duplikat. Lanjutkan import?</p>
+      <form action="save_import.php" method="post">
+        <button type="submit" name="action" value="insert">Konfirmasi</button>
+      </form>
+    <?php endif; ?>
+  </div>
+</div>
+<?php endif; ?>
 
     <!-- Pagination -->
     <div id="pagination" class="pagination"></div>
@@ -577,7 +609,22 @@ usort($filtered, function($a, $b) use ($sort) {
     }
   };
 
+// Import Modal
+const importModal = document.getElementById("importModal");
+const btnOpenImport = document.getElementById("btnOpenImport");
+const closeImport = document.getElementById("closeImport");
 
+btnOpenImport.onclick = function() {
+  importModal.style.display = "flex";
+}
+closeImport.onclick = function() {
+  importModal.style.display = "none";
+}
+window.onclick = function(event) {
+  if (event.target == importModal) {
+    importModal.style.display = "none";
+  }
+}
 
 </script>
 </body>
