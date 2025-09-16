@@ -171,20 +171,26 @@ usort($filtered, function($a, $b) use ($sort) {
                     <td><?= $row['auto'] ?></td>
                     <td><?= htmlspecialchars($row['catatan']) ?></td>
                     <td>
+
                     <button class="btn btn-edit" 
-                            onclick="openEditModal(
-                                '<?= htmlspecialchars($row['tipe']) ?>',
-                                '<?= htmlspecialchars($row['nama']) ?>',
-                                '<?= htmlspecialchars($row['provider']) ?>',
-                                '', 
-                                '<?= $row['expire'] ?>',
-                                '', 
-                                '', 
-                                '<?= $row['auto'] ?>',
-                                '<?= htmlspecialchars($row['catatan']) ?>'
-                            )">Edit</button>
+                      data-id="<?= $row['id'] ?>"
+                      data-type="<?= htmlspecialchars($row['tipe']) ?>"
+                      data-name="<?= htmlspecialchars($row['nama']) ?>"
+                      data-provider="<?= htmlspecialchars($row['provider']) ?>"
+                      data-expire="<?= $row['expire'] ?>"
+                      data-serviceid="<?= $row['service_id'] ?? '' ?>"
+                      data-cost="<?= $row['cost'] ?? '' ?>"
+                      data-currency="<?= $row['currency'] ?? '' ?>"
+                      data-auto="<?= $row['auto'] ?>"
+                      data-note="<?= htmlspecialchars($row['catatan'] ?? '') ?>"
+                    >Edit</button>
+
                     <button class="btn btn-plus" onclick="openPlusOneYearModal(<?= $row['id'] ?>)">+1y</button>
-                    <button class="btn btn-del">Hapus</button>
+
+                    <form method="post" action="delete.php" style="display:inline;">
+                        <input type="hidden" name="id" value="<?= $row['id'] ?>">
+                        <button type="submit" class="btn btn-del">Hapus</button>
+                    </form>
                 </td>
                 </tr>
             <?php endforeach; ?>
@@ -194,58 +200,74 @@ usort($filtered, function($a, $b) use ($sort) {
         </tbody>
     </table>
 
-    <!-- Modal Form -->
-    <div id="editModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); justify-content:center; align-items:center;">
-    <div class="modal-content" style="background:#0f172a; padding:20px; border-radius:10px; width:650px; position:relative;">
-    <span id="closeModal" style="position:absolute; top:10px; right:15px; cursor:pointer; font-size:20px; color:white;">&times;</span>
-    <h2>Edit Item</h2>
-    <form id="editForm" style="display:flex; flex-wrap:wrap; gap:15px;">
-      <div style="flex:1 1 48%;">
-        <label>Tipe</label>
-        <select id="editType" required>
-          <option value="Domain">Domain</option>
-          <option value="Hosting">Hosting</option>
-        </select>
+    <!-- MODAL EDIT -->
+
+    <div id="editModal" class="modal" style="display:none;">
+        <div class="modal-content">
+          <span class="modal-close" id="btnCloseEditModal">&times;</span>
+          
+          <!-- Form -->
+          <div class="card">
+            <form id="editForm" method="post" action="update.php" class="row" autocomplete="off">
+              <input type="hidden" id="editId" name="id" />
+
+              <div class="col">
+                <label for="editType">Tipe</label>
+                <select id="editType" name="type" required>
+                  <option value="domain">Domain</option>
+                  <option value="hosting">Hosting</option>
+                </select>
+              </div>
+
+              <div class="col">
+                <label for="editName">Nama</label>
+                <input id="editName" name="name" placeholder="contohku.com / VPS Project" required />
+              </div>
+
+              <div class="col">
+                <label for="editProvider">Registrar / Provider</label>
+                <input id="editProvider" name="provider" placeholder="Niagahoster / Cloudflare / IDCloudHost" />
+              </div>
+
+              <div class="col">
+                <label for="editServiceId">ID Layanan (opsional)</label>
+                <input id="editServiceId" name="serviceId" placeholder="INV-123 / SID-456" />
+              </div>
+
+              <div class="col">
+                <label for="editExpiry">Tanggal Expire</label>
+                <input id="editExpiry" name="expiry" type="date" required />
+              </div>
+
+              <div class="col">
+                <label for="editCost">Biaya (opsional)</label>
+                <input id="editCost" name="cost" type="number" min="0" step="0.01" placeholder="0" />
+              </div>
+
+              <div class="col">
+                <label for="editCurrency">Mata Uang</label>
+                <input id="editCurrency" name="currency" placeholder="IDR / USD" />
+              </div>
+
+              <div class="col" style="align-self:end">
+                <label>
+                  <input id="editAutoRenew" name="autoRenew" type="checkbox" /> Auto-Renew ON
+                </label>
+              </div>
+
+              <div class="col" style="flex:1 1 100%">
+                <label for="editNote">Catatan</label>
+                <textarea id="editNote" name="note" placeholder="Keterangan tambahan…"></textarea>
+              </div>
+
+              <div class="col" style="flex:1 1 100%;display:flex;gap:8px;justify-content:flex-end">
+                <button type="button" class="secondary" id="btnCancelEdit">Batal</button>
+                <button type="submit" id="btnSaveEdit">Simpan</button>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
-      <div style="flex:1 1 48%;">
-        <label>Nama</label>
-        <input id="editName" placeholder="contohku.com / VPS Project" required />
-      </div>
-      <div style="flex:1 1 48%;">
-        <label>Registrar / Provider</label>
-        <input id="editProvider" placeholder="Niagahoster / Cloudflare / IDCloudHost" />
-      </div>
-      <div style="flex:1 1 48%;">
-        <label>ID Layanan (opsional)</label>
-        <input id="editServiceId" placeholder="INV-123 / SID-456" />
-      </div>
-      <div style="flex:1 1 48%;">
-        <label>Tanggal Expire</label>
-        <input id="editExpire" type="date" required />
-      </div>
-      <div style="flex:1 1 48%;">
-        <label>Biaya (opsional)</label>
-        <input id="editCost" type="number" min="0" step="0.01" placeholder="0" />
-      </div>
-      <div style="flex:1 1 48%;">
-        <label>Mata Uang</label>
-        <input id="editCurrency" placeholder="IDR / USD" />
-      </div>
-      <div style="flex:1 1 48%; display:flex; align-items:center; gap:10px;">
-        <input id="editAuto" type="checkbox" />
-        <label>Auto-Renew ON</label>
-      </div>
-      <div style="flex:1 1 100%;">
-        <label>Catatan</label>
-        <textarea id="editNote" placeholder="Keterangan tambahan…"></textarea>
-      </div>
-      <div style="flex:1 1 100%; display:flex; justify-content:flex-end; gap:10px;">
-        <button type="button" id="btnCancel" style="background:#334155;color:white;padding:10px;border:none;border-radius:6px;cursor:pointer;">Batal</button>
-        <button type="submit" style="background:#0284c7;color:white;padding:10px;border:none;border-radius:6px; cursor:pointer;">Simpan</button>
-      </div>
-    </form>
-  </div>
-</div>
 
 <!-- Modal Konfirmasi +1 Tahun -->
 <div id="plusOneYearModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center;">
@@ -282,184 +304,149 @@ usort($filtered, function($a, $b) use ($sort) {
 
     
     <script>
-        const editModal = document.getElementById("editModal");
-const closeModal = document.getElementById("closeModal");
+        const editModal = document.getElementById('editModal');
+        const btnCloseEdit = document.getElementById('btnCloseEditModal');
+        const btnCancelEdit = document.getElementById('btnCancelEdit');
 
-function openEditModal(tipe, nama, provider, serviceId, expire, cost, currency, auto, note) {
-    document.getElementById("editType").value = tipe;
-    document.getElementById("editName").value = nama;
-    document.getElementById("editProvider").value = provider;
-    document.getElementById("editExpire").value = expire;
-    document.getElementById("editAuto").checked = (auto === "ON");
-    document.getElementById("editNote").value = note;
+        // tombol edit di tabel
+        document.querySelectorAll('.btn-edit').forEach(btn => {
+          btn.addEventListener('click', () => {
+            document.getElementById('editId').value = btn.dataset.id;
+            document.getElementById('editType').value = btn.dataset.type;
+            document.getElementById('editName').value = btn.dataset.name;
+            document.getElementById('editProvider').value = btn.dataset.provider;
+            document.getElementById('editServiceId').value = btn.dataset.serviceId || '';
+            document.getElementById('editExpiry').value = btn.dataset.expire;
+            document.getElementById('editCost').value = btn.dataset.cost || '';
+            document.getElementById('editCurrency').value = btn.dataset.currency || '';
+            document.getElementById('editNote').value = btn.dataset.note || '';
+            document.getElementById('editAutoRenew').checked = btn.dataset.auto === '1';
+            editModal.style.display = 'flex';
+          });
+        });
 
-    editModal.style.display = "flex";
-}
+        // tutup modal
+        btnCloseEdit.addEventListener('click', () => editModal.style.display = 'none');
+        btnCancelEdit.addEventListener('click', () => editModal.style.display = 'none');
 
-// Tutup modal
-closeModal.onclick = () => editModal.style.display = "none";
-window.onclick = (e) => { if(e.target === editModal) editModal.style.display = "none"; }
+        // klik di luar modal
+        window.addEventListener('click', e => {
+          if(e.target === editModal) editModal.style.display = 'none';
+        });
+        // Pagination
 
-// Submit form
-document.getElementById("editForm").onsubmit = function(e){
-    e.preventDefault();
-    // Ambil data dari form
-    let tipe = document.getElementById("editType").value;
-    let nama = document.getElementById("editName").value;
-    let provider = document.getElementById("editProvider").value;
-    let expire = document.getElementById("editExpire").value;
-    let auto = document.getElementById("editAuto").checked ? "ON" : "OFF";
-    let note = document.getElementById("editNote").value;
+            let currentPage = 1;
+            const rowsPerPage = 10;
 
-    // TODO: kirim data via AJAX ke PHP untuk update db
-    console.log({tipe, nama, provider, expire, auto, note});
+            function displayTable() {
+                let input = document.getElementById("searchInput").value.toLowerCase();
+                let table = document.getElementById("domainTable");
+                let tr = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+                let filteredRows = [];
 
-    // Tutup modal setelah submit
-    editModal.style.display = "none";
-}
+                for (let i = 0; i < tr.length; i++) {
+                    let rowText = tr[i].innerText.toLowerCase();
+                    if (rowText.indexOf(input) > -1) {
+                        filteredRows.push(tr[i]);
+                    }
+                }
 
-    let currentPage = 1;
-    const rowsPerPage = 10;
+                // pagination
+                let start = (currentPage - 1) * rowsPerPage;
+                let end = start + rowsPerPage;
 
-    function displayTable() {
-        let input = document.getElementById("searchInput").value.toLowerCase();
-        let table = document.getElementById("domainTable");
-        let tr = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
-        let filteredRows = [];
+                for (let i = 0; i < tr.length; i++) {
+                    tr[i].style.display = "none"; // hide semua dulu
+                }
+                for (let i = 0; i < filteredRows.length; i++) {
+                    if (i >= start && i < end) {
+                        filteredRows[i].style.display = "";
+                    }
+                }
 
-        for (let i = 0; i < tr.length; i++) {
-            let rowText = tr[i].innerText.toLowerCase();
-            if (rowText.indexOf(input) > -1) {
-                filteredRows.push(tr[i]);
+                setupPagination(filteredRows.length);
             }
-        }
 
-        // pagination
-        let start = (currentPage - 1) * rowsPerPage;
-        let end = start + rowsPerPage;
+            function setupPagination(totalRows) {
+                let pagination = document.getElementById("pagination");
+                pagination.innerHTML = "";
+                let totalPages = Math.ceil(totalRows / rowsPerPage);
 
-        for (let i = 0; i < tr.length; i++) {
-            tr[i].style.display = "none"; // hide semua dulu
-        }
-        for (let i = 0; i < filteredRows.length; i++) {
-            if (i >= start && i < end) {
-                filteredRows[i].style.display = "";
+                for (let i = 1; i <= totalPages; i++) {
+                    let btn = document.createElement("button");
+                    btn.innerText = i;
+                    if (i === currentPage) btn.classList.add("active");
+                    btn.onclick = function () {
+                        currentPage = i;
+                        displayTable();
+                    };
+                    pagination.appendChild(btn);
+                }
             }
-        }
 
-        setupPagination(filteredRows.length);
-    }
-
-    function setupPagination(totalRows) {
-        let pagination = document.getElementById("pagination");
-        pagination.innerHTML = "";
-        let totalPages = Math.ceil(totalRows / rowsPerPage);
-
-        if (totalPages <= 1) return; // tidak perlu pagination kalau cuma 1 halaman
-
-        // tombol « (prev)
-        if (currentPage > 1) {
-            let prev = document.createElement("a");
-            prev.innerHTML = "&laquo;";
-            prev.href = "#";
-            prev.onclick = function (e) {
-                e.preventDefault();
-                currentPage--;
+            window.onload = function() {
                 displayTable();
             };
-            pagination.appendChild(prev);
-        }
 
-        // nomor halaman
-        for (let i = 1; i <= totalPages; i++) {
-            let link = document.createElement("a");
-            link.innerText = i;
-            link.href = "#";
-            if (i === currentPage) link.classList.add("active");
-            link.onclick = function (e) {
-                e.preventDefault();
-                currentPage = i;
-                displayTable();
-            };
-            pagination.appendChild(link);
-        }
-
-        // tombol » (next)
-        if (currentPage < totalPages) {
-            let next = document.createElement("a");
-            next.innerHTML = "&raquo;";
-            next.href = "#";
-            next.onclick = function (e) {
-                e.preventDefault();
-                currentPage++;
-                displayTable();
-            };
-            pagination.appendChild(next);
-        }
-    }
-
-    window.onload = function() {
-        displayTable();
-    };
-
-    </script>
+        </script>
 
 <?php include 'footer.php'; ?>
 
-<!-- Modal Form -->
 <div id="itemModal" class="modal">
-  <div class="modal-content">
-    <span class="modal-close" id="btnCloseModal">&times;</span>
-    <!-- Form -->
-    <div class="card">
-      <form id="itemForm" class="row" autocomplete="off">
-        <input type="hidden" id="itemId" />
-        <div class="col">
-          <label for="type">Tipe</label>
-          <select id="type" required>
-            <option value="domain">Domain</option>
-            <option value="hosting">Hosting</option>
-          </select>
+      <div class="modal-content">
+        <span class="modal-close" id="btnCloseModal">&times;</span>
+        
+        <!-- Form -->
+        <div class="card">
+          <form id="itemForm" method="post" action="create.php" class="row" autocomplete="off">
+            <input type="hidden" id="itemId" />
+            <div class="col">
+              <label for="type">Tipe</label>
+              <select id="type" name="type" required>
+                <option value="domain">Domain</option>
+                <option value="hosting">Hosting</option>
+              </select>
+            </div>
+
+            <div class="col">
+              <label for="name">Nama</label>
+              <input id="name" name="name" placeholder="contohku.com / VPS Project" required />
+            </div>
+            <div class="col">
+              <label for="provider">Registrar / Provider</label>
+              <input id="provider" name="provider" placeholder="Niagahoster / Cloudflare / IDCloudHost" />
+            </div>
+            <div class="col">
+              <label for="serviceId">ID Layanan (opsional)</label>
+              <input id="serviceId" name="serviceId" placeholder="INV-123 / SID-456" />
+            </div>
+            <div class="col">
+              <label for="expiry">Tanggal Expire</label>
+              <input id="expiry" name="expiry" type="date" required />
+            </div>
+            <div class="col">
+              <label for="cost">Biaya (opsional)</label>
+              <input id="cost" name="cost" type="number" min="0" step="0.01" placeholder="0" />
+            </div>
+            <div class="col">
+              <label for="currency">Mata Uang</label>
+              <input id="currency" name="currency" placeholder="IDR / USD" />
+            </div>
+            <div class="col" style="align-self:end">
+              <label><input id="autoRenew" name="autoRenew" type="checkbox" /> Auto-Renew ON</label>
+            </div>
+            <div class="col" style="flex:1 1 100%">
+              <label for="note">Catatan</label>
+              <textarea id="note" name="note" placeholder="Keterangan tambahan…"></textarea>
+            </div>
+            <div class="col" style="flex:1 1 100%;display:flex;gap:8px;justify-content:flex-end">
+              <button type="button" class="secondary" id="btnReset">Bersihkan</button>
+              <button type="submit" id="btnSave">Simpan</button>
+            </div>
+          </form>
         </div>
-        <div class="col">
-          <label for="name">Nama</label>
-          <input id="name" placeholder="contohku.com / VPS Project" required />
-        </div>
-        <div class="col">
-          <label for="provider">Registrar / Provider</label>
-          <input id="provider" placeholder="Niagahoster / Cloudflare / IDCloudHost" />
-        </div>
-        <div class="col">
-          <label for="serviceId">ID Layanan (opsional)</label>
-          <input id="serviceId" placeholder="INV-123 / SID-456" />
-        </div>
-        <div class="col">
-          <label for="expiry">Tanggal Expire</label>
-          <input id="expiry" type="date" required />
-        </div>
-        <div class="col">
-          <label for="cost">Biaya (opsional)</label>
-          <input id="cost" type="number" min="0" step="0.01" placeholder="0" />
-        </div>
-        <div class="col">
-          <label for="currency">Mata Uang</label>
-          <input id="currency" placeholder="IDR / USD" />
-        </div>
-        <div class="col" style="align-self:end">
-          <label><input id="autoRenew" type="checkbox" /> Auto-Renew ON</label>
-        </div>
-        <div class="col" style="flex:1 1 100%">
-          <label for="note">Catatan</label>
-          <textarea id="note" placeholder="Keterangan tambahan…"></textarea>
-        </div>
-        <div class="col" style="flex:1 1 100%;display:flex;gap:8px;justify-content:flex-end">
-          <button type="button" class="secondary" id="btnReset">Bersihkan</button>
-          <button type="submit" id="btnSave">Simpan</button>
-        </div>
-      </form>
+      </div>
     </div>
-  </div>
-</div>
 
 <script>
   const modal = document.getElementById("itemModal");
