@@ -97,7 +97,7 @@ usort($filtered, function($a, $b) use ($sort) {
 }
 
 .pagination a.active {
-  background-color: #0284c7; /* biru aktif */
+  background-color: #165eb1ff; /* biru aktif */
   color: white;
 }
 
@@ -348,6 +348,7 @@ usort($filtered, function($a, $b) use ($sort) {
                     let rowText = tr[i].innerText.toLowerCase();
                     if (rowText.indexOf(input) > -1) {
                         filteredRows.push(tr[i]);
+
                     }
                 }
 
@@ -361,6 +362,7 @@ usort($filtered, function($a, $b) use ($sort) {
                 for (let i = 0; i < filteredRows.length; i++) {
                     if (i >= start && i < end) {
                         filteredRows[i].style.display = "";
+
                     }
                 }
 
@@ -372,15 +374,49 @@ usort($filtered, function($a, $b) use ($sort) {
                 pagination.innerHTML = "";
                 let totalPages = Math.ceil(totalRows / rowsPerPage);
 
+                if (totalPages <= 1) return; // tidak perlu pagination kalau cuma 1 halaman
+
+                // tombol « (prev)
+                if (currentPage > 1) {
+                    let prev = document.createElement("a");
+                    prev.innerHTML = "&laquo;";
+                    prev.href = "#";
+                    prev.onclick = function (e) {
+                        e.preventDefault();
+                        currentPage--;
+                        displayTable();
+                    };
+                    pagination.appendChild(prev);
+                }
+
+                // nomor halaman
                 for (let i = 1; i <= totalPages; i++) {
-                    let btn = document.createElement("button");
-                    btn.innerText = i;
-                    if (i === currentPage) btn.classList.add("active");
-                    btn.onclick = function () {
+                    let link = document.createElement("a");
+                    link.innerText = i;
+                    link.href = "#";
+                    if (i === currentPage) link.classList.add("active");
+                    link.onclick = function (e) {
+                        e.preventDefault();
                         currentPage = i;
                         displayTable();
                     };
-                    pagination.appendChild(btn);
+                    pagination.appendChild(link);
+
+
+
+                }
+
+                // tombol » (next)
+                if (currentPage < totalPages) {
+                    let next = document.createElement("a");
+                    next.innerHTML = "&raquo;";
+                    next.href = "#";
+                    next.onclick = function (e) {
+                        e.preventDefault();
+                        currentPage++;
+                        displayTable();
+                    };
+                    pagination.appendChild(next);
                 }
             }
 
