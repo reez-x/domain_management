@@ -313,7 +313,7 @@ usort($filtered, function($a, $b) use ($sort) {
                     <td>
                     <!-- Tombol Edit di tabel -->
                     <button class="btn btn-edit" 
-<<<<<<< HEAD
+
                     data-id="<?= $row['id'] ?>"
                     data-type="<?= htmlspecialchars($row['tipe']) ?>"
                     data-name="<?= htmlspecialchars($row['nama']) ?>"
@@ -333,7 +333,6 @@ usort($filtered, function($a, $b) use ($sort) {
                         <button type="submit" class="btn btn-del">Hapus</button>
                     </form>
 
-=======
                             onclick="openEditModal(
                                 '<?= htmlspecialchars($row['tipe']) ?>',
                                 '<?= htmlspecialchars($row['nama']) ?>',
@@ -347,7 +346,6 @@ usort($filtered, function($a, $b) use ($sort) {
                             )">Edit</button>
                     <button class="btn btn-plus" onclick="openPlusOneYearModal(<?= $row['id'] ?>)">+1y</button>
                     <button class="btn btn-del">Hapus</button>
->>>>>>> d76e84e63c695787cfaa67f79d3503278e63005c
                 </td>
                 </tr>
             <?php endforeach; ?>
@@ -367,7 +365,6 @@ usort($filtered, function($a, $b) use ($sort) {
             <form id="editForm" method="post" action="update.php" class="row" autocomplete="off">
               <input type="hidden" id="editId" name="id" />
 
-<<<<<<< HEAD
               <div class="col">
                 <label for="editType">Tipe</label>
                 <select id="editType" name="type" required>
@@ -375,22 +372,21 @@ usort($filtered, function($a, $b) use ($sort) {
                   <option value="hosting">Hosting</option>
                 </select>
               </div>
-=======
 <!-- Modal Konfirmasi +1 Tahun -->
-<div id="plusOneYearModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center;">
-  <div class="modal-content" style="background:#0f172a; padding:20px; border-radius:10px; width:400px; text-align:center; position:relative;">
-    <span id="closePlusOneYearModal" style="position:absolute; top:10px; right:15px; cursor:pointer; font-size:20px; color:white;">&times;</span>
-    <h2>Konfirmasi</h2>
-    <p style="margin:20px 0;">Apakah Anda yakin ingin menambah <strong>1 tahun</strong> pada domain ini?</p>
-    
-    <input type="hidden" id="plusOneYearDomainId">
+    <div id="plusOneYearModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center;">
+      <div class="modal-content" style="background:#0f172a; padding:20px; border-radius:10px; width:400px; text-align:center; position:relative;">
+        <span id="closePlusOneYearModal" style="position:absolute; top:10px; right:15px; cursor:pointer; font-size:20px; color:white;">&times;</span>
+        <h2>Konfirmasi</h2>
+        <p style="margin:20px 0;">Apakah Anda yakin ingin menambah <strong>1 tahun</strong> pada domain ini?</p>
+        
+        <input type="hidden" id="plusOneYearDomainId">
 
-    <div style="display:flex; justify-content:center; gap:10px;">
-      <button id="confirmPlusOneYear" style="background:#0284c7;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;">Ya</button>
-      <button id="cancelPlusOneYear" style="background:#334155;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;">Batal</button>
+        <div style="display:flex; justify-content:center; gap:10px;">
+          <button id="confirmPlusOneYear" style="background:#0284c7;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;">Ya</button>
+          <button id="cancelPlusOneYear" style="background:#334155;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;">Batal</button>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
 <!-- Modal Notifikasi -->
 <div id="notificationModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center;">
@@ -412,8 +408,7 @@ usort($filtered, function($a, $b) use ($sort) {
     
     <script>
         const editModal = document.getElementById("editModal");
-const closeModal = document.getElementById("closeModal");
->>>>>>> d76e84e63c695787cfaa67f79d3503278e63005c
+        const closeModal = document.getElementById("closeModal");
 
               <div class="col">
                 <label for="editName">Nama</label>
@@ -445,7 +440,6 @@ const closeModal = document.getElementById("closeModal");
                 <input id="editCurrency" name="currency" placeholder="IDR / USD" />
               </div>
 
-<<<<<<< HEAD
               <div class="col" style="align-self:end">
                 <label>
                   <input id="editAutoRenew" name="autoRenew" type="checkbox" /> Auto-Renew ON
@@ -470,6 +464,7 @@ const closeModal = document.getElementById("closeModal");
         <div id="pagination"></div>
         
         <script>
+
         const editModal = document.getElementById('editModal');
         const btnCloseEdit = document.getElementById('btnCloseEditModal');
         const btnCancelEdit = document.getElementById('btnCancelEdit');
@@ -611,7 +606,7 @@ const closeModal = document.getElementById("closeModal");
               <button type="submit" id="btnSave">Simpan</button>
             </div>
           </form>
-=======
+
     let currentPage = 1;
     const rowsPerPage = 10;
 
@@ -714,7 +709,6 @@ const closeModal = document.getElementById("closeModal");
             <option value="domain">Domain</option>
             <option value="hosting">Hosting</option>
           </select>
->>>>>>> d76e84e63c695787cfaa67f79d3503278e63005c
         </div>
       </div>
     </div>
@@ -739,8 +733,6 @@ const closeModal = document.getElementById("closeModal");
     }
   };
 
-<<<<<<< HEAD
-=======
   const plusOneYearModal = document.getElementById("plusOneYearModal");
   const closePlusOneYearModal = document.getElementById("closePlusOneYearModal");
   const cancelPlusOneYear = document.getElementById("cancelPlusOneYear");
@@ -786,7 +778,6 @@ const closeModal = document.getElementById("closeModal");
   closePlusYearModal();
 };
 
-
   const notificationModal = document.getElementById("notificationModal");
   const closeNotificationModal = document.getElementById("closeNotificationModal");
   const notificationOkBtn = document.getElementById("notificationOkBtn");
@@ -813,9 +804,6 @@ const closeModal = document.getElementById("closeModal");
       notificationModal.style.display = "none";
     }
   };
-
->>>>>>> d76e84e63c695787cfaa67f79d3503278e63005c
-
 
 </script>
 </body>
