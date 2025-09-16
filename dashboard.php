@@ -111,7 +111,10 @@ usort($filtered, function($a, $b) use ($sort) {
 </head>
 <body>
     <h1>Domain Management Dashboard</h1>
-
+    <div class="chips" style="margin-bottom: 20px;">
+        <span class="chip">Jam lokal: <span id="clock" class="mono"></span></span>
+        <span class="chip">Timezone: Asia/Jakarta (browser local)</span>
+      </div>
     <!-- Filter Form -->
     <form method="get" style="display:flex; flex-wrap:nowrap; gap:10px; align-items:center; max-width:100%; margin-bottom:20px; overflow-x:auto;">
         <input type="text" id="searchInput" name="search" placeholder="Cari nama / provider..." 
@@ -515,6 +518,44 @@ usort($filtered, function($a, $b) use ($sort) {
         </div>
       </div>
     </div>
+
+    <script>
+    (function() {
+        // Fungsi untuk menampilkan jam lokal Asia/Jakarta
+        function updateClock() {
+            const options = {
+                timeZone: "Asia/Jakarta",
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: false
+            };
+
+            const formatter = new Intl.DateTimeFormat('en-GB', options);
+            const parts = formatter.formatToParts(new Date());
+
+            // ambil tiap bagian
+            let y, m, d, h, min, s;
+            parts.forEach(p => {
+                if (p.type === 'year') y = p.value;
+                if (p.type === 'month') m = p.value;
+                if (p.type === 'day') d = p.value;
+                if (p.type === 'hour') h = p.value;
+                if (p.type === 'minute') min = p.value;
+                if (p.type === 'second') s = p.value;
+            });
+
+            document.getElementById('clock').textContent = `${y}-${m}-${d} ${h}:${min}:${s}`;
+        }
+
+        // jalankan langsung dan tiap detik
+        updateClock();
+        setInterval(updateClock, 1000);
+    })();
+</script>
 
 <script>
   const modal = document.getElementById("itemModal");
