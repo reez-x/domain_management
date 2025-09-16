@@ -12,6 +12,7 @@ include 'function.php';
 
 //function
 $sql = "SELECT 
+    id,
     item_type AS tipe, 
     name AS nama, 
     provider, 
@@ -182,7 +183,7 @@ usort($filtered, function($a, $b) use ($sort) {
                                 '<?= $row['auto'] ?>',
                                 '<?= htmlspecialchars($row['catatan']) ?>'
                             )">Edit</button>
-                    <button class="btn btn-plus">+1y</button>
+                    <button class="btn btn-plus" onclick="openPlusOneYearModal(<?= $row['id'] ?>)">+1y</button>
                     <button class="btn btn-del">Hapus</button>
                 </td>
                 </tr>
@@ -245,6 +246,36 @@ usort($filtered, function($a, $b) use ($sort) {
     </form>
   </div>
 </div>
+
+<!-- Modal Konfirmasi +1 Tahun -->
+<div id="plusOneYearModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center;">
+  <div class="modal-content" style="background:#0f172a; padding:20px; border-radius:10px; width:400px; text-align:center; position:relative;">
+    <span id="closePlusOneYearModal" style="position:absolute; top:10px; right:15px; cursor:pointer; font-size:20px; color:white;">&times;</span>
+    <h2>Konfirmasi</h2>
+    <p style="margin:20px 0;">Apakah Anda yakin ingin menambah <strong>1 tahun</strong> pada domain ini?</p>
+    
+    <input type="hidden" id="plusOneYearDomainId">
+
+    <div style="display:flex; justify-content:center; gap:10px;">
+      <button id="confirmPlusOneYear" style="background:#0284c7;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;">Ya</button>
+      <button id="cancelPlusOneYear" style="background:#334155;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;">Batal</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Notifikasi -->
+<div id="notificationModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center;">
+  <div class="modal-content" style="background:#0f172a; padding:20px; border-radius:10px; width:400px; text-align:center; position:relative;">
+    <span id="closeNotificationModal" style="position:absolute; top:10px; right:15px; cursor:pointer; font-size:20px; color:white;">&times;</span>
+    <h2 id="notificationTitle" style="color:white; margin-bottom:10px;"></h2>
+    <p id="notificationMessage" style="color:#cbd5e1;"></p>
+    <div style="margin-top:20px;">
+      <button id="notificationOkBtn" style="background:#0284c7;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;">OK</button>
+    </div>
+  </div>
+</div>
+
+
 
     <!-- Pagination -->
     <div id="pagination" class="pagination"></div>
@@ -449,6 +480,82 @@ document.getElementById("editForm").onsubmit = function(e){
       modal.style.display = "none";
     }
   };
+
+  const plusOneYearModal = document.getElementById("plusOneYearModal");
+  const closePlusOneYearModal = document.getElementById("closePlusOneYearModal");
+  const cancelPlusOneYear = document.getElementById("cancelPlusOneYear");
+  const confirmPlusOneYear = document.getElementById("confirmPlusOneYear");
+
+  // Buka modal
+  function openPlusOneYearModal(domainId) {
+    document.getElementById("plusOneYearDomainId").value = domainId;
+    plusOneYearModal.style.display = "flex";
+  }
+
+  // Tutup modal
+  function closePlusYearModal() {
+    plusOneYearModal.style.display = "none";
+  }
+
+  closePlusOneYearModal.onclick = closePlusYearModal;
+  cancelPlusOneYear.onclick = closePlusYearModal;
+
+  confirmPlusOneYear.onclick = function() {
+  const domainId = document.getElementById("plusOneYearDomainId").value;
+
+  fetch('update_expire.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: `id=${domainId}`
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      showNotification("Sukses", "Tanggal expire berhasil ditambah 1 tahun!", true);
+    } else {
+      showNotification("Gagal", "Tidak dapat memperbarui tanggal expire!", false);
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    showNotification("Error", "Terjadi kesalahan saat memperbarui data!", false);
+  });
+
+  closePlusYearModal();
+};
+
+
+  const notificationModal = document.getElementById("notificationModal");
+  const closeNotificationModal = document.getElementById("closeNotificationModal");
+  const notificationOkBtn = document.getElementById("notificationOkBtn");
+
+  function showNotification(title, message, reload = false) {
+    document.getElementById("notificationTitle").innerText = title;
+    document.getElementById("notificationMessage").innerText = message;
+    notificationModal.style.display = "flex";
+
+    notificationOkBtn.onclick = function() {
+      notificationModal.style.display = "none";
+      if (reload) {
+        location.reload(); 
+      }
+    };
+  }
+
+  closeNotificationModal.onclick = () => {
+    notificationModal.style.display = "none";
+  };
+
+  window.onclick = (e) => {
+    if (e.target === notificationModal) {
+      notificationModal.style.display = "none";
+    }
+  };
+
+
+
 </script>
 </body>
 </html>
