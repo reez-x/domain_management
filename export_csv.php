@@ -7,27 +7,35 @@ header('Content-Disposition: attachment; filename=domains_export.csv');
 // buka output stream
 $output = fopen('php://output', 'w');
 
-// tulis header kolom
+// tulis header kolom sesuai database
 fputcsv($output, [
-    'ID', 'Tipe', 'Nama', 'Provider', 'Service ID',
-    'Expire Date', 'Hari', 'Auto Renew', 'Cost', 'Currency',
-    'Catatan', 'Created At', 'Updated At'
+    'id',
+    'item_type',
+    'name',
+    'provider',
+    'service_id',
+    'expire_date',
+    'auto_renew',
+    'cost',
+    'currency',
+    'note',
+    'created_at',
+    'updated_at'
 ]);
 
-// query data
+// query data persis dengan struktur tabel
 $sql = "SELECT 
-            id, 
-            item_type, 
-            name, 
-            provider, 
-            service_id, 
-            expire_date, 
-            DATEDIFF(expire_date, CURDATE()) AS hari,
-            auto_renew, 
-            cost, 
-            currency, 
-            note, 
-            created_at, 
+            id,
+            item_type,
+            name,
+            provider,
+            service_id,
+            expire_date,
+            auto_renew,
+            cost,
+            currency,
+            note,
+            created_at,
             updated_at
         FROM domains";
 $data = getData($sql);
