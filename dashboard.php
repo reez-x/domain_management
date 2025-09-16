@@ -84,7 +84,7 @@ usort($filtered, function($a, $b) use ($sort) {
           border-radius: 8px; 
           border: none; 
           background: #161b22; 
-          color: white; 
+          color: #fff; 
           width: 100%; 
         }
 
@@ -93,7 +93,7 @@ usort($filtered, function($a, $b) use ($sort) {
           border-radius: 8px; 
           border: none; 
           background: #0284c7; 
-          color: white; 
+          color: #fff; 
           cursor: pointer; 
         }
 
@@ -198,30 +198,6 @@ usort($filtered, function($a, $b) use ($sort) {
           font-weight: bold;
           transform: scale(1.05);
         }    
-        
-        .notif-card {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: #0284c7; /* biru */
-        color: white;
-        padding: 20px 30px;
-        border-radius: 10px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        font-size: 16px;
-        z-index: 9999;
-        opacity: 0;
-        animation: fadeInOut 3s forwards;
-    }
-
-      @keyframes fadeInOut {
-          0% { opacity: 0; }
-          10% { opacity: 1; }
-          90% { opacity: 1; }
-          100% { opacity: 0; }
-      }
-
     </style>
 
 
