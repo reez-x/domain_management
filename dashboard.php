@@ -110,6 +110,38 @@ usort($filtered, function($a, $b) use ($sort) {
     </style>
 </head>
 <body>
+  <!-- Notifikasi -->
+<?php if (isset($_GET['msg']) && $_GET['msg'] === 'deleted'): ?>
+  <div id="notif" style="
+    position:fixed;
+    top:20px;
+    left:50%;
+    transform:translateX(-50%);
+    background:var(--card);
+    color:var(--foreground);
+    padding:14px 22px;
+    border:1px solid var(--border);
+    border-radius:12px;
+    font-family:inherit;
+    font-size:14px;
+    z-index:10000;
+    box-shadow:0 4px 12px rgba(0,0,0,0.15);
+    transition: opacity 0.5s ease;
+  ">
+    🗑️ Data berhasil dihapus!
+  </div>
+
+  <script>
+    setTimeout(() => {
+      const notif = document.getElementById("notif");
+      if (notif) {
+        notif.style.opacity = "0";
+        setTimeout(() => notif.remove(), 500); // tunggu animasi lalu hapus
+      }
+    }, 3000);
+  </script>
+<?php endif; ?>
+
     <h1>Domain Management Dashboard</h1>
     <div class="chips" style="margin-bottom: 20px;">
         <span class="chip">Jam lokal: <span id="clock" class="mono"></span></span>
@@ -190,10 +222,15 @@ usort($filtered, function($a, $b) use ($sort) {
 
                     <button class="btn btn-plus" onclick="openPlusOneYearModal(<?= $row['id'] ?>)">+1y</button>
 
-                    <form method="post" action="delete.php" style="display:inline;">
+                    <!-- <form method="post" action="delete.php" style="display:inline;">
                         <input type="hidden" name="id" value="<?= $row['id'] ?>">
                         <button type="submit" class="btn btn-del">Hapus</button>
-                    </form>
+                    </form> -->
+
+                    <button type="button" class="btn btn-del" onclick="openDeleteModal(<?= $row['id'] ?>)">
+                      Hapus
+                    </button>
+
                 </td>
                 </tr>
             <?php endforeach; ?>
@@ -333,6 +370,20 @@ usort($filtered, function($a, $b) use ($sort) {
   </div>
 </div>
 <?php endif; ?>
+
+<!-- Modal Konfirmasi Delete -->
+<div id="deleteModal" class="modal">
+  <div class="modal-content" style="max-width:400px; text-align:center;">
+    <h3>Konfirmasi Hapus</h3>
+    <p>Apakah Anda yakin ingin menghapus data ini?</p>
+    <form method="post" action="delete.php">
+      <input type="hidden" name="id" id="deleteId">
+      <button type="submit" class="btn btn-del">Ya, Hapus</button>
+      <button type="button" class="btn btn-cancel" onclick="closeDeleteModal()">Batal</button>
+    </form>
+  </div>
+</div>
+
 
     <!-- Pagination -->
     <div id="pagination" class="pagination"></div>
@@ -668,5 +719,17 @@ window.onclick = function(event) {
 }
 
 </script>
+
+<script>
+function openDeleteModal(id) {
+  document.getElementById("deleteId").value = id;
+  document.getElementById("deleteModal").style.display = "flex";
+}
+
+function closeDeleteModal() {
+  document.getElementById("deleteModal").style.display = "none";
+}
+</script>
+
 </body>
 </html>
