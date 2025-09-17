@@ -144,6 +144,11 @@ usort($filtered, function($a, $b) use ($sort) {
     </div>
   <?php endif; ?>
 
+<form action="test_reminder.php" method="post">
+  <button type="submit" name="send_wa">Kirim WhatsApp</button>
+</form>
+
+
     <h1>Domain Management Dashboard</h1>
     <div class="chips" style="margin-bottom: 20px;">
         <span class="chip">Jam lokal: <span id="clock" class="mono"></span></span>
@@ -739,6 +744,18 @@ setTimeout(() => {
   if (notif) notif.style.display = 'none';
 }, 3000);
 </script>
+
+<script>
+function sendWhatsApp() {
+    // nomor tujuan (pakai format internasional, tanpa +)
+    const phone = "6281234567890"; 
+    const message = encodeURIComponent("Halo, ini notifikasi dari dashboard kamu ✅");
+    
+    // buka whatsapp
+    window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
+}
+</script>
+
 
 </body>
 </html>
