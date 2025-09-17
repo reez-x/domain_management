@@ -105,42 +105,44 @@ usort($filtered, function($a, $b) use ($sort) {
   background-color: #334155; /* abu hover */
 }
 
+.notification {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  z-index: 9999;
+  animation: fadeIn 0.5s ease;
+}
+.notification.success { background: #4CAF50; } /* hijau */
+.notification.error   { background: #f44336; } /* merah */
 
+@keyframes fadeIn {
+  from { opacity: 0; transform: translate(-50%, -20px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
 
     </style>
 </head>
 <body>
   <!-- Notifikasi -->
-<?php if (isset($_GET['msg']) && $_GET['msg'] === 'deleted'): ?>
-  <div id="notif" style="
-    position:fixed;
-    top:20px;
-    left:50%;
-    transform:translateX(-50%);
-    background:var(--card);
-    color:var(--foreground);
-    padding:14px 22px;
-    border:1px solid var(--border);
-    border-radius:12px;
-    font-family:inherit;
-    font-size:14px;
-    z-index:10000;
-    box-shadow:0 4px 12px rgba(0,0,0,0.15);
-    transition: opacity 0.5s ease;
-  ">
-    🗑️ Data berhasil dihapus!
-  </div>
-
-  <script>
-    setTimeout(() => {
-      const notif = document.getElementById("notif");
-      if (notif) {
-        notif.style.opacity = "0";
-        setTimeout(() => notif.remove(), 500); // tunggu animasi lalu hapus
-      }
-    }, 3000);
-  </script>
-<?php endif; ?>
+  <?php if (isset($_GET['msg']) && $_GET['msg'] === 'deleted'): ?>
+    <div class="notification success">
+      Data berhasil dihapus!
+    </div>
+  <?php elseif (isset($_GET['import']) && $_GET['import'] === 'success'): ?>
+    <div class="notification success">
+      Data berhasil diimport!
+    </div>
+  <?php elseif (isset($_GET['import']) && $_GET['import'] === 'empty'): ?>
+    <div class="notification error">
+      Data import kosong!
+    </div>
+  <?php endif; ?>
 
     <h1>Domain Management Dashboard</h1>
     <div class="chips" style="margin-bottom: 20px;">
@@ -729,6 +731,13 @@ function openDeleteModal(id) {
 function closeDeleteModal() {
   document.getElementById("deleteModal").style.display = "none";
 }
+</script>
+
+<script>
+setTimeout(() => {
+  const notif = document.querySelector('.notification');
+  if (notif) notif.style.display = 'none';
+}, 3000);
 </script>
 
 </body>
