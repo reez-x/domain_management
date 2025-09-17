@@ -226,9 +226,9 @@ input:checked + .slider::before {
   <?php endif; ?>
 
 
-<form action="test_reminder.php" method="post">
+<!-- <form action="test_reminder.php" method="post">
   <button type="submit" name="send_wa">Kirim WhatsApp</button>
-</form>
+</form> -->
 
 
     <h1>Domain Management Dashboard</h1>
