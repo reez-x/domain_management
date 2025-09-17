@@ -110,8 +110,9 @@
 <header>
     <div class="header">
       <div>
-        <div class="title">Expiry Manager <span class="pill">offline • tanpa notifikasi</span></div>
-        <div class="muted">Kelola masa aktif domain & hosting • data tersimpan lokal di browser (localStorage)</div>
+        <div class="title">Expiry Manager</div>
+        <!-- <span class="pill">offline • tanpa notifikasi</span> -->
+        <div class="muted">Kelola masa aktif domain & hosting</div>
       </div>
       <div class="actions">
         <button onclick="window.location.href='export_csv.php'" id="btnExportCsv" title="Ekspor CSV">Ekspor CSV</button>
