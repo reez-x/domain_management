@@ -19,7 +19,8 @@ $sql = "SELECT
     expire_date AS expire, 
     DATEDIFF(expire_date, CURDATE()) AS hari, 
     auto_renew AS auto, 
-    note AS catatan
+    note AS catatan,
+    created_at
     FROM domains";
 
     $data = getData($sql);
@@ -34,12 +35,37 @@ $filtered = array_filter($data, function($item) use ($search, $type, $status) {
                    strpos(strtolower($item["nama"]), $search) !== false ||
                    strpos(strtolower($item["provider"]), $search) !== false;
     $matchType   = $type === "" || strtolower($item["tipe"]) === strtolower($type);
-    $matchStatus = $status === "" || $item["auto"] === $status;
+    $matchStatus = true;
+    if ($status === "JatuhTempo") {
+        $matchStatus = $item["hari"] > 0 && $item["hari"] <= 30;
+    } elseif ($status === "Expired") {
+        $matchStatus = $item["hari"] <= 0;
+    } elseif ($status === "AutoRenew") {
+        $matchStatus = $item["auto"] == 1;
+    }
+
     return $matchSearch && $matchType && $matchStatus;
 });
 
 usort($filtered, function($a, $b) use ($sort) {
-    return $sort === "asc" ? $a["hari"] <=> $b["hari"] : $b["hari"] <=> $a["hari"];
+    switch($sort) {
+        case "asc":
+            return $a["hari"] <=> $b["hari"];
+        case "desc":
+            return $b["hari"] <=> $a["hari"];
+        case "nama_asc":
+            return strcmp($a["nama"], $b["nama"]);
+        case "nama_desc":
+            return strcmp($b["nama"], $a["nama"]);
+        case "tgl_asc":
+            return (!empty($a["created_at"]) ? strtotime($a["created_at"]) : 0) 
+                 <=> (!empty($b["created_at"]) ? strtotime($b["created_at"]) : 0);
+        case "tgl_desc":
+            return (!empty($b["created_at"]) ? strtotime($b["created_at"]) : 0) 
+                 <=> (!empty($a["created_at"]) ? strtotime($a["created_at"]) : 0);
+        default:
+            return 0;
+    }
 });
 ?>
 
@@ -127,6 +153,53 @@ usort($filtered, function($a, $b) use ($sort) {
 }
 
     </style>
+    <style>
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 28px;
+}
+
+/* Hide default checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Slider background */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 28px;
+}
+
+/* Circle */
+.slider::before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+/* Checked state */
+input:checked + .slider {
+  background-color: #22d3ee;
+}
+
+input:checked + .slider::before {
+  transform: translateX(22px);
+}
+</style>
 </head>
 <body>
   <!-- Notifikasi -->
@@ -296,9 +369,11 @@ usort($filtered, function($a, $b) use ($sort) {
                 <input id="editCurrency" name="currency" placeholder="IDR / USD" />
               </div>
 
-              <div class="col" style="align-self:end">
-                <label>
-                  <input id="editAutoRenew" name="autoRenew" type="checkbox" /> Auto-Renew ON
+              <div class="col" style="align-self:end; display:flex; align-items:center; gap:10px;">
+                <span>Auto-Renew ON</span>
+                <label class="switch">
+                  <input id="editAutoRenew" name="autoRenew" type="checkbox" />
+                  <span class="slider round"></span>
                 </label>
               </div>
 
@@ -561,8 +636,12 @@ usort($filtered, function($a, $b) use ($sort) {
               <label for="currency">Mata Uang</label>
               <input id="currency" name="currency" placeholder="IDR / USD" />
             </div>
-            <div class="col" style="align-self:end">
-              <label><input id="autoRenew" name="autoRenew" type="checkbox" /> Auto-Renew ON</label>
+            <div class="col" style="align-self:end; display:flex; align-items:center; gap:10px;">
+              <span>Auto-Renew ON</span>
+              <label class="switch">
+                <input id="autoRenew" name="autoRenew" type="checkbox" />
+                <span class="slider round"></span>
+              </label>
             </div>
             <div class="col" style="flex:1 1 100%">
               <label for="note">Catatan</label>
