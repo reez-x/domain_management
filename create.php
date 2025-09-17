@@ -1,7 +1,5 @@
 <?php
-
 include 'function.php';
-
 
 if($_SERVER['REQUEST_METHOD'] === 'POST') {
     $type = $_POST['type'];
@@ -18,14 +16,13 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             VALUES ('$type', '$name', '$provider', '$serviceId', '$expiry', '$cost', '$currency', '$autoRenew', '$note')";
 
     if(runQuery($sql)) {
-        header("Location: dashboard.php?msg=success");
+        // Redirect ke dashboard dengan query string msg=added
+        header("Location: dashboard.php?msg=added");
         exit;
     } else {
         echo "Gagal menambahkan data: " . $conn->error;
     }
 } else {
-echo "Tipe, Nama, dan Tanggal Expire wajib diisi!";
+    echo "Tipe, Nama, dan Tanggal Expire wajib diisi!";
 }
 ?>
-
-

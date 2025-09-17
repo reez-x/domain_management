@@ -207,6 +207,10 @@ input:checked + .slider::before {
     <div class="notification success">
       Data berhasil dihapus!
     </div>
+  <?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'added'): ?>
+    <div class="notification success">
+      Data berhasil ditambahkan!
+    </div>
   <?php elseif (isset($_GET['import']) && $_GET['import'] === 'success'): ?>
     <div class="notification success">
       Data berhasil diimport!
