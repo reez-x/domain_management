@@ -204,22 +204,27 @@ input:checked + .slider::before {
 <body>
   <!-- Notifikasi -->
   <?php if (isset($_GET['msg']) && $_GET['msg'] === 'deleted'): ?>
-    <div class="notification success">
-      Data berhasil dihapus!
-    </div>
+      <div class="notification success">
+        Data berhasil dihapus!
+      </div>
   <?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'added'): ?>
-    <div class="notification success">
-      Data berhasil ditambahkan!
-    </div>
+      <div class="notification success">
+        Data berhasil ditambahkan!
+      </div>
+  <?php elseif (isset($_GET['update']) && $_GET['update'] === 'success'): ?>
+      <div class="notification success">
+        Data berhasil diperbarui!
+      </div>
   <?php elseif (isset($_GET['import']) && $_GET['import'] === 'success'): ?>
-    <div class="notification success">
-      Data berhasil diimport!
-    </div>
+      <div class="notification success">
+        Data berhasil diimport!
+      </div>
   <?php elseif (isset($_GET['import']) && $_GET['import'] === 'empty'): ?>
-    <div class="notification error">
-      Data import kosong!
-    </div>
+      <div class="notification error">
+        Data import kosong!
+      </div>
   <?php endif; ?>
+
 
 <form action="test_reminder.php" method="post">
   <button type="submit" name="send_wa">Kirim WhatsApp</button>
